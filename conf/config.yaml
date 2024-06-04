@@ -1,0 +1,44 @@
+testing: False
+
+
+folders:
+  data: ../data/dataset
+  outputs: ../outputs
+  assessment: ${folders.data}/assessment
+  mass_shape: ${folders.data}/mass_shape
+  pathology: ${folders.data}/pathology
+  plots_dir: ${folders.outputs}/graphs
+  cur_plot: ${folders.plots_dir}
+  loss: ${folders.cur_plot}/loss_function.png
+  accuracy: ${folders.cur_plot}/accuracy.png
+  f1: ${folders.cur_plot}/f1.png
+  report: ${folders.cur_plot}/classification_report.png
+
+
+  
+
+preprocessing:
+  image_size: 224
+  norm:
+      mean: [0.485, 0.456, 0.406] 
+      std: [0.229, 0.224, 0.225]
+
+hp:
+  batch_size: 32
+  lr: 0.01
+  epochs: 30
+
+task: pathology
+
+classes_per_task:
+  pathology: 2
+  mass_shape: 4
+  birads: 5
+
+class_names:
+  assessment: ["0", "3", "4", "5"]
+  pathology: ["MALIGNANT", "BENIGN"]
+  mass_shape: ["OVAL", "LOBULATED", "IRREGULAR", "ROUND"]
+
+
+seed: 42
