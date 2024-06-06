@@ -32,7 +32,7 @@ def load_dataset(cfg, task, testing=False):
     #     dataset, [cfg.hp.split.train, cfg.hp.split.val, cfg.hp.split.test]
     # )
     if testing:
-        indices = np.random.choice(len(train_dataset), size=2000, replace=False)
+        indices = np.random.choice(len(train_dataset), size=500, replace=False)
         train_dataset = Subset(train_dataset, indices)
 
     train_loader = DataLoader(train_dataset, batch_size=cfg.hp.batch_size, shuffle=True)

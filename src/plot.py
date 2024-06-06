@@ -1,4 +1,5 @@
 import matplotlib
+from pathlib import Path
 
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
@@ -17,7 +18,10 @@ def plot_graph(data: tuple, description: dict) -> None:
     # if len(data) > 1:
     for i, data in enumerate(data):
         # plt.plot(data, label=description["label"][i])
-        plt.plot(moving_average(data), label=description["label"][i])
+        if i == 2:
+            plt.plot(data[0], data[1], label=description["label"][i])
+        else:
+            plt.plot(moving_average(data), label=description["label"][i])
     # else:
     #     plt.plot(data[0])
 
@@ -69,11 +73,13 @@ def plot_model_graphs(results: dict) -> None:
 
 
 def plot_results(cfg, results, task):
+    task_folder = Path(cfg.folders.outputs)/task/"graphs"
+    task_folder.mkdir(parents=True, exist_ok=True)
     desc = {
         "title": "Loss Function",
         "xlabel": "Epoch",
         "ylabel": "Loss",
-        "savefig": f"{cfg.folders.loss}",
+        "savefig": str(task_folder/"loss.png"),
         "label": ["Train", "Val"],
     }
     plot_graph(results["loss"], desc)
@@ -82,8 +88,8 @@ def plot_results(cfg, results, task):
         "title": "Accuracy",
         "xlabel": "Epoch",
         "ylabel": "Accuracy",
-        "savefig": f"{cfg.folders.accuracy}",
-        "label": ["Train", "Val"],
+        "savefig": str(task_folder/"accuracy.png"),
+        "label": ["Train", "Val", "best acc"],
     }
 
     plot_graph(results["accuracy"], desc)
@@ -92,8 +98,8 @@ def plot_results(cfg, results, task):
         "title": "Average F1 Score",
         "xlabel": "Epoch",
         "ylabel": "F1 score",
-        "savefig": f"{cfg.folders.f1}",
-        "label": ["Train", "Val", "Best F1"],
+        "savefig": str(task_folder/"f1.png"),
+        "label": ["Train", "Val"],
     }
     plot_graph(results["f1"], desc)
 
@@ -101,5 +107,5 @@ def plot_results(cfg, results, task):
         results["val_true_labels"],
         results["val_predicted_labels"],
         cfg["class_names"][task],
-        cfg.folders.report,
+        str(task_folder/"classification_report.png"),
     )

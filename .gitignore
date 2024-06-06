@@ -2,8 +2,12 @@ __pycache__
 .vscode
 
 # directories
-outputs/
+outputs/*
 data/*
 !data/masked_cropped/
+!data/df.csv
+!data/df_meta.csv
+
+!outputs/pathology/
 
 

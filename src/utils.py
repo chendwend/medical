@@ -7,10 +7,10 @@ import requests
 
 def chngdir():
     print(f"cwd:{Path().absolute()}")
-    script_dir = Path(__file__).parent
-    print(f"script parent directory: {script_dir}")
-    chdir(script_dir)
-    print(f"cwd after changing to script directory:{Path().absolute()}")
+    # script_dir = Path(__file__).parent
+    # print(f"script parent directory: {script_dir}")
+    # chdir(script_dir)
+    # print(f"cwd after changing to script directory:{Path().absolute()}")
 
 
 def download_image(url, directory, label, index):

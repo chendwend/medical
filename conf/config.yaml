@@ -2,8 +2,8 @@ testing: False
 
 
 folders:
-  data: ../data/dataset
-  outputs: ../outputs
+  data: ./data/dataset
+  outputs: ./outputs
   assessment: ${folders.data}/assessment
   mass_shape: ${folders.data}/mass_shape
   pathology: ${folders.data}/pathology
@@ -28,7 +28,7 @@ hp:
   lr: 0.01
   epochs: 30
 
-task: pathology
+task: mass_shape
 
 classes_per_task:
   pathology: 2

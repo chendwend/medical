@@ -9,7 +9,7 @@ class CustomResNet(nn.Module):
         super(CustomResNet, self).__init__()
         if model_name == "resnet50":
             self.resnet = resnet50(weights=ResNet50_Weights.DEFAULT)
-        elif model_name == "resnet100":
+        elif model_name == "resnet101":
             self.resnet = resnet101(weights=ResNet101_Weights.DEFAULT)        
         elif model_name == "resnet152":
             self.resnet = resnet152(weights=ResNet152_Weights.DEFAULT)
