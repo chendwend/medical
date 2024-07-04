@@ -8,7 +8,7 @@ def load_dataset(cfg, task, testing=False):
     data_transforms = transforms.Compose(
         [
             transforms.Resize(
-                (cfg.preprocessing.image_size, cfg.preprocessing.image_size)
+                (cfg.preprocessing.image_size[0], cfg.preprocessing.image_size[1])
             ),
             transforms.ToTensor(),
             transforms.Normalize(

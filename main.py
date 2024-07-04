@@ -17,7 +17,7 @@ from tqdm import tqdm
 @hydra.main(version_base="1.3", config_path="conf", config_name="config")
 def main(cfg):
     system('clear')
-    chngdir()
+    # chngdir()
     torch.manual_seed(cfg.seed)
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Computation device: {DEVICE}\n")
@@ -25,10 +25,11 @@ def main(cfg):
     train_loader, val_loader, test_loader = load_dataset(cfg, cfg.task, cfg.testing)
 
     model = CustomResNet(num_classes=cfg["classes_per_task"][cfg.task], model_name="resnet50")
+    model.to(DEVICE)
 
-    loss = torch.nn.CrossEntropyLoss(label_smoothing=0.25)
-    optimizer = optim.Adam(
-        model.parameters(), lr=cfg.hp.lr)
+    loss = torch.nn.CrossEntropyLoss(cfg.hp.label_smoothing)
+    lr = cfg.hp.lr
+    optimizer = optim.Adam(model.parameters(), lr=lr)
     
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=5, min_lr=0.0001)
 
@@ -36,15 +37,16 @@ def main(cfg):
     val_accuracy_history, train_accuracy_history = [], []
     train_f1_hist, val_f1_hist = [], []
 
-    # best_model, best_f1, val_at_best_f1 = None, 0, 0
     best_model, best_epoch, best_acc, f1_at_best_val = None, 0, 0, 0
 
-    lr = cfg.hp.lr
+    
     num_epochs = 2 if cfg.testing else cfg.hp.epochs
-    for epoch in tqdm(range(num_epochs), total=num_epochs):
-        train_avg_f1, train_loss, train_accuracy = train_loop(
-            model, train_loader, loss, optimizer, cfg["classes_per_task"][cfg.task], DEVICE
-        )
+    for epoch in tqdm(range(1, num_epochs+1), total=num_epochs):
+        (
+            train_avg_f1,
+            train_loss, 
+            train_accuracy 
+        ) = train_loop(model, train_loader, loss, optimizer, cfg["classes_per_task"][cfg.task], DEVICE)
 
         train_f1_hist.append(train_avg_f1)
         train_loss_hist.append(train_loss)
@@ -66,7 +68,7 @@ def main(cfg):
         new_lr = scheduler.get_last_lr()[0]
         if new_lr < lr:
             lr = new_lr
-            print(f"lr updated -> {scheduler.get_last_lr()[0]}.")
+            print(f"lr updated -> {new_lr}.")
 
 
         if val_accuracy > best_acc:
@@ -79,7 +81,7 @@ def main(cfg):
 
         epoch_summary = ", ".join(
             [
-                f"[Epoch {epoch+1}/{num_epochs}]:",
+                f"[Epoch {epoch}/{num_epochs}]:",
                 f"Train loss {train_loss_hist[-1]:.2f}",
                 f"Val accuracy {val_accuracy:.2f}%",
                 f"Val average F1 score: {val_avg_f1:.2f}",

@@ -1,4 +1,4 @@
-testing: False
+testing: True
 
 
 folders:
@@ -18,7 +18,7 @@ folders:
   
 
 preprocessing:
-  image_size: 224
+  image_size: [224, 224]
   norm:
       mean: [0.485, 0.456, 0.406] 
       std: [0.229, 0.224, 0.225]
@@ -27,8 +27,11 @@ hp:
   batch_size: 32
   lr: 0.01
   epochs: 30
+  label_smoothing: 0.25
 
-task: mass_shape
+# task: birads
+# task: mass_shape
+task: pathology
 
 classes_per_task:
   pathology: 2
@@ -42,3 +45,7 @@ class_names:
 
 
 seed: 42
+
+# DDP settings
+
+backend: 'nccl' # 'nccl', 'gloo', etc.
