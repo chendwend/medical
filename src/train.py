@@ -5,6 +5,7 @@ from tqdm import tqdm
 from src.metrics import calc_accuracy, calc_conf_per_class, calc_f1
 
 
+
 def train_loop(model, train_loader, criterion, optimizer, num_classes, device):
     model.train()
 

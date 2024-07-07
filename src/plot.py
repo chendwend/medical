@@ -1,7 +1,7 @@
-import matplotlib
+# import matplotlib
 from pathlib import Path
 
-matplotlib.use("TkAgg")
+# matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -30,25 +30,26 @@ def plot_graph(data: tuple, description: dict) -> None:
     plt.xlabel(description["xlabel"])
     plt.ylabel(description["ylabel"])
     plt.savefig(description["savefig"])
-    plt.show(block=False)
+    # plt.show(block=False)
     # input("Press Enter to close the plot...")
 
 
-def plot_conf_matrix(conf_matrix, class_names) -> None:
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(
-        conf_matrix,
-        annot=True,
-        fmt="d",
-        cmap="Blues",
-        xticklabels=class_names,
-        yticklabels=class_names,
-    )
-    plt.xlabel("Predicted Labels")
-    plt.ylabel("True Labels")
-    plt.title("Confusion Matrix")
-    plt.show(block=False)
-    input("Press Enter to close the plot...")
+# def plot_conf_matrix(conf_matrix, class_names) -> None:
+#     plt.figure(figsize=(8, 6))
+#     sns.heatmap(
+#         conf_matrix,
+#         annot=True,
+#         fmt="d",
+#         cmap="Blues",
+#         xticklabels=class_names,
+#         yticklabels=class_names,
+#     )
+#     plt.xlabel("Predicted Labels")
+#     plt.ylabel("True Labels")
+#     plt.title("Confusion Matrix")
+#     plt.savefig(description["savefig"])
+#     # plt.show(block=False)
+#     # input("Press Enter to close the plot...")
 
 
 def plot_model_graphs(results: dict) -> None:
@@ -68,12 +69,12 @@ def plot_model_graphs(results: dict) -> None:
     ax[2].set(xlabel="Epoch", ylabel="F1 Score")
 
     fig.savefig(results["savefig"])
-    plt.show(block=False)
-    input("Press Enter to close the plot...")
+    # plt.show(block=False)
+    # input("Press Enter to close the plot...")
 
 
-def plot_results(cfg, results, task):
-    task_folder = Path(cfg.folders.outputs)/task/"graphs"
+def plot_results(output_folder, results, task, class_names):
+    task_folder = Path(output_folder)/task/"graphs"
     task_folder.mkdir(parents=True, exist_ok=True)
     desc = {
         "title": "Loss Function",
@@ -106,6 +107,6 @@ def plot_results(cfg, results, task):
     create_report(
         results["val_true_labels"],
         results["val_predicted_labels"],
-        cfg["class_names"][task],
+        class_names,
         str(task_folder/"classification_report.png"),
     )

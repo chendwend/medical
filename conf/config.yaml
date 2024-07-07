@@ -1,4 +1,8 @@
-testing: True
+testing: False
+
+# task: birads
+# task: mass_shape
+task: pathology
 
 
 folders:
@@ -25,13 +29,11 @@ preprocessing:
 
 hp:
   batch_size: 32
-  lr: 0.01
+  lr: 0.001
   epochs: 30
   label_smoothing: 0.25
 
-# task: birads
-# task: mass_shape
-task: pathology
+
 
 classes_per_task:
   pathology: 2
@@ -48,4 +50,4 @@ seed: 42
 
 # DDP settings
 
-backend: 'nccl' # 'nccl', 'gloo', etc.
+backend: nccl # nccl, gloo, etc.

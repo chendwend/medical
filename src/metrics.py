@@ -1,6 +1,6 @@
-import matplotlib
+# import matplotlib
 
-matplotlib.use("TkAgg")
+# matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import classification_report
@@ -74,4 +74,4 @@ def create_report(y_true, y_pred, class_names, path):
     # Save the visualization as an image (e.g., PNG)
 
     plt.savefig(path, bbox_inches="tight", pad_inches=0.2, dpi=150)
-    plt.show()
+    # plt.show()
