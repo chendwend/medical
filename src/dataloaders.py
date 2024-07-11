@@ -19,7 +19,22 @@ def prepare_dataloader(dataset: ImageFolder, batch_size: int, shuffle: bool=Fals
     return dataloader
 
 def get_dataloaders(cfg, task, testing=False):
-    data_transforms = transforms.Compose(
+    train_transforms = transforms.Compose(
+        [
+            transforms.Resize(
+                (cfg.preprocessing.image_size[0], cfg.preprocessing.image_size[1])
+            ),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
+            # transforms.RandomRotation(30),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                (cfg.preprocessing.norm.mean),
+                (cfg.preprocessing.norm.std),
+            ),
+        ]
+    )
+    val_transforms = transforms.Compose(
         [
             transforms.Resize(
                 (cfg.preprocessing.image_size[0], cfg.preprocessing.image_size[1])
@@ -33,13 +48,13 @@ def get_dataloaders(cfg, task, testing=False):
     )
     # Create the dataset
     train_dataset = ImageFolder(
-        root=str(cfg["folders"][task]) + "/train", transform=data_transforms
+        root=str(cfg["folders"][task]) + "/train", transform=train_transforms
     )
     val_dataset = ImageFolder(
-        root=str(cfg["folders"][task]) + "/val", transform=data_transforms
+        root=str(cfg["folders"][task]) + "/val", transform=val_transforms
     )
     test_dataset = ImageFolder(
-        root=str(cfg["folders"][task]) + "/test", transform=data_transforms
+        root=str(cfg["folders"][task]) + "/test", transform=val_transforms
     )
 
     if testing:
@@ -49,8 +64,6 @@ def get_dataloaders(cfg, task, testing=False):
         val_dataset = Subset(val_dataset, val_indices)
 
     if int(os.environ['LOCAL_RANK']) == 0:
-        print(f"Train dataset classes: {train_dataset.dataset.classes}")
-        print(f"Val dataset classes: {val_dataset.dataset.classes}")
         print(f"Train dataset has {len(train_dataset)} images")
         print(f"Val dataset has {len(val_dataset)} images")
 

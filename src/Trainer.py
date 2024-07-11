@@ -139,7 +139,6 @@ class Trainer():
         if dist.get_rank() == 0:
             combined_true_labels = [label for sublist in gathered_true_labels for label in sublist]
             combined_predicted_labels = [label for sublist in gathered_predicted_labels for label in sublist]
-            print(f"predicted labels on master: {combined_predicted_labels}\n\n")
         else:
             combined_true_labels, combined_predicted_labels = None, None
 
@@ -206,7 +205,7 @@ class Trainer():
     def _run_epoch(self, epoch):
 
         b_sz = len(next(iter(self.train_data))[0])
-        print(f"[GPU{self.gpu_id}] Epoch {epoch} | Batchsize: {b_sz} | Steps: {len(self.train_data)}")
+        # print(f"[GPU{self.gpu_id}] Epoch {epoch} | Batchsize: {b_sz} | Steps: {len(self.train_data)}")
         self.train_data.sampler.set_epoch(epoch) # ----------
         self.validation_data.sampler.set_epoch(epoch)
 
@@ -241,7 +240,7 @@ class Trainer():
                 [
                     f"[Epoch {epoch}/{self.max_epochs}]:",
                     f"Train loss {self._train_loss_hist[-1]:.2f}",
-                    f"Val accuracy {val_accuracy:.2f}%",
+                    f"Val accuracy {val_accuracy*100:.2f}%",
                     f"Val average F1 score: {val_avg_f1:.2f}",
                 ]
             )
@@ -288,7 +287,7 @@ class Trainer():
                 "val_true_labels": (self._val_true_labels),
                 "val_predicted_labels": (self._val_predicted_labels)
             }
-
+            print(self._val_accuracy_history[0], self._train_accuracy_history[0])
             self._plot_results(results)
     def _cleanup(self):
         torch.cuda.empty_cache()

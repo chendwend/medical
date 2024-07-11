@@ -5,7 +5,7 @@ from torchvision.models import (ResNet50_Weights, ResNet101_Weights,
 
 
 class CustomResNet(nn.Module):
-    def __init__(self, num_classes, model_name='resnet50', fc_layer=1024, dropout_rate=0.3, freeze_pretrained=True):
+    def __init__(self, num_classes, model_name='resnet50', fc_layer=512, dropout_rate=0.5, freeze_pretrained=True):
         super(CustomResNet, self).__init__()
         if model_name == "resnet50":
             self.resnet = resnet50(weights=ResNet50_Weights.DEFAULT)

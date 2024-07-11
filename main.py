@@ -31,7 +31,7 @@ def main(cfg):
     ddp = int(os.environ.get('RANK', -1)) != -1
     if ddp:
         ddp_setup()
-    torch.manual_seed(cfg.seed)
+    torch.manual_seed(cfg.seed+ddp)
         # DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
@@ -47,7 +47,7 @@ def main(cfg):
     loss = torch.nn.CrossEntropyLoss(label_smoothing=cfg.hp.label_smoothing)
     optimizer = optim.Adam(model.parameters(), lr=cfg.hp.lr)
         
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=4, min_lr=1e-5)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=6, min_lr=1e-5)
 
     max_epochs = cfg.hp.epochs
     if cfg["testing"]:
