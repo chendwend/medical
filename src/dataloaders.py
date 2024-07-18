@@ -1,11 +1,10 @@
-import numpy as np
-import torchvision.transforms as transforms
-from torchvision.datasets import ImageFolder
-from torch.utils.data import DataLoader, Subset
-from torch.utils.data.distributed import DistributedSampler
-
 import os
 
+import numpy as np
+import torchvision.transforms as transforms
+from torch.utils.data import DataLoader, Subset
+from torch.utils.data.distributed import DistributedSampler
+from torchvision.datasets import ImageFolder
 
 
 def prepare_dataloader(dataset: ImageFolder, batch_size: int, shuffle: bool=False) -> DataLoader:

@@ -22,7 +22,8 @@ folders:
   
 
 preprocessing:
-  image_size: [224, 224]
+  # image_size: [224, 224]
+  image_size: [256, 256]
   norm:
       mean: [0.485, 0.456, 0.406] 
       std: [0.229, 0.224, 0.225]
@@ -30,8 +31,9 @@ preprocessing:
 hp:
   batch_size: 32
   lr: 0.01
-  epochs: 20
+  epochs: 30
   label_smoothing: 0.25
+  lr_patience: 4
 
 
 

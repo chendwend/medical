@@ -1,12 +1,16 @@
 # import matplotlib
 from pathlib import Path
 
-# matplotlib.use("TkAgg")
+import matplotlib
+
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
 
 from src.metrics import create_report
+
+# import seaborn as sns
+
 
 
 def moving_average(x, w=5):
@@ -92,7 +96,6 @@ def plot_results(output_folder, results, task, class_names):
         "savefig": str(task_folder/"accuracy.png"),
         "label": ["Train", "Val", "best acc"],
     }
-
     plot_graph(results["accuracy"], desc)
 
     desc = {

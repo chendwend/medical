@@ -1,10 +1,10 @@
 import os
-# from pathlib import Path
-# from tqdm import tqdm
 
 import hydra
 import torch
 import torch.optim as optim
+# from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.distributed import destroy_process_group, init_process_group
 
 from src.dataloaders import get_dataloaders
 from src.model import CustomResNet
@@ -14,8 +14,11 @@ from src.model import CustomResNet
 # from src.validation import validation_loop
 from src.Trainer import Trainer
 
-# from torch.nn.parallel import DistributedDataParallel as DDP
-from torch.distributed import init_process_group, destroy_process_group
+# from pathlib import Path
+# from tqdm import tqdm
+
+
+
 
 def ddp_setup() -> None:
 
@@ -42,16 +45,14 @@ def main(cfg):
 
     model = CustomResNet(num_classes=cfg["classes_per_task"][cfg.task], model_name="resnet50")
 
-        # model.to(DEVICE)
-
     loss = torch.nn.CrossEntropyLoss(label_smoothing=cfg.hp.label_smoothing)
     optimizer = optim.Adam(model.parameters(), lr=cfg.hp.lr)
         
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=6, min_lr=1e-5)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=cfg.hp.lr_patience, min_lr=1e-5)
 
     max_epochs = cfg.hp.epochs
     if cfg["testing"]:
-        max_epochs = 2
+        max_epochs = 3
 
     trainer = Trainer("pathology", 
                     model, 

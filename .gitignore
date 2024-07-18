@@ -4,10 +4,11 @@ __pycache__
 # directories
 outputs/*
 data/*
+best_models/*
 !data/masked_cropped/
 !data/df.csv
 !data/df_meta.csv
 
 !outputs/pathology/
 
-best_models/**/*.pt
+

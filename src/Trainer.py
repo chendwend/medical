@@ -1,16 +1,16 @@
-from typing import Union
-from pathlib import Path
 import os
+from pathlib import Path
+from typing import Union
+
+import numpy as np
+import torch
+import torch.distributed as dist
+from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from src.metrics import calc_accuracy, calc_conf_per_class, calc_f1
 from src.plot import plot_results
-
-import torch
-from torch.utils.data import DataLoader
-from torch.nn.parallel import DistributedDataParallel as DDP
-import torch.distributed as dist
-import numpy as np
 
 
 class Trainer():
@@ -122,7 +122,7 @@ class Trainer():
 
         if dist.get_rank() == 0:
             avg_val_loss = total_loss.item() / len(self.validation_data)
-            val_accuracy = total_correct.item() / total.item()
+            val_accuracy = 100* total_correct.item() / total.item()
             f1 = calc_f1(tp, fp, fn)
             avg_f1 = f1.mean().item()
         else:
@@ -156,7 +156,7 @@ class Trainer():
 
         self.model.train()
 
-        for inputs, targets in self.train_data:
+        for inputs, targets in tqdm(self.train_data, total=len(self.train_data)):
             inputs, targets = inputs.to(self.gpu_id, non_blocking=True), targets.to(self.gpu_id, non_blocking=True)
             self.optimizer.zero_grad()
             predicted = self.model(inputs)
@@ -240,7 +240,7 @@ class Trainer():
                 [
                     f"[Epoch {epoch}/{self.max_epochs}]:",
                     f"Train loss {self._train_loss_hist[-1]:.2f}",
-                    f"Val accuracy {val_accuracy*100:.2f}%",
+                    f"Val accuracy {val_accuracy:.2f}%",
                     f"Val average F1 score: {val_avg_f1:.2f}",
                 ]
             )
@@ -287,7 +287,6 @@ class Trainer():
                 "val_true_labels": (self._val_true_labels),
                 "val_predicted_labels": (self._val_predicted_labels)
             }
-            print(self._val_accuracy_history[0], self._train_accuracy_history[0])
             self._plot_results(results)
     def _cleanup(self):
         torch.cuda.empty_cache()
@@ -331,5 +330,4 @@ class Trainer():
         print(f"epoch {epoch} => Saving a new best model at {filename}")
 
     def _plot_results(self, results):
-        # print(self._val_true_labels)
         plot_results(Path("best_models"), results, self.task, self.class_names)
