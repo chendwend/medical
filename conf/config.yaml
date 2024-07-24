@@ -31,6 +31,7 @@ preprocessing:
 hp:
   batch_size: 32
   lr: 0.01
+  weight_decay: 0.01
   epochs: 30
   label_smoothing: 0.25
   lr_patience: 4

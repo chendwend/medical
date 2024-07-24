@@ -1,23 +1,27 @@
 import os
 
 import numpy as np
+import timm
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, Subset
 from torch.utils.data.distributed import DistributedSampler
 from torchvision.datasets import ImageFolder
 
+# data_config = timm.data.resolve_model_data_config(model)
+# transforms = timm.data.create_transform(**data_config, is_training=False)
 
-def prepare_dataloader(dataset: ImageFolder, batch_size: int, shuffle: bool=False) -> DataLoader:
+def prepare_dataloader(dataset: ImageFolder, batch_size: int, is_distributed) -> DataLoader:
+    sampler = DistributedSampler(dataset) if is_distributed else None
     dataloader = DataLoader(
         dataset, 
         batch_size=batch_size, 
-        shuffle=shuffle, 
+        shuffle=sampler is None, 
         pin_memory=True, 
-        sampler=DistributedSampler(dataset))
+        sampler=sampler)
     
     return dataloader
 
-def get_dataloaders(cfg, task, testing=False):
+def get_dataloaders(cfg, task, is_distributed, testing=False):
     train_transforms = transforms.Compose(
         [
             transforms.Resize(
@@ -66,9 +70,9 @@ def get_dataloaders(cfg, task, testing=False):
         print(f"Train dataset has {len(train_dataset)} images")
         print(f"Val dataset has {len(val_dataset)} images")
 
-    train_loader = prepare_dataloader(train_dataset, cfg.hp.batch_size)
-    val_loader   = prepare_dataloader(val_dataset, cfg.hp.batch_size)
-    test_loader  = prepare_dataloader(test_dataset, cfg.hp.batch_size)
+    train_loader = prepare_dataloader(train_dataset, is_distributed, cfg.hp.batch_size)
+    val_loader   = prepare_dataloader(val_dataset, is_distributed, cfg.hp.batch_size)
+    test_loader  = prepare_dataloader(test_dataset, is_distributed, cfg.hp.batch_size)
 
 
     return train_loader, val_loader, test_loader
