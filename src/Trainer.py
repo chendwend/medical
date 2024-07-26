@@ -1,11 +1,9 @@
 import os
 from pathlib import Path
-from typing import Union
 
 import numpy as np
 import torch
 import torch.distributed as dist
-import wandb
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
 from tqdm import tqdm
@@ -13,6 +11,7 @@ from tqdm import tqdm
 from src.metrics import calc_accuracy, calc_conf_per_class, calc_f1
 from src.plot import plot_results
 
+# from typing import Union
 
 class Trainer():
     def __init__(
@@ -27,7 +26,6 @@ class Trainer():
         hp_dict: dict,
         world_size: int,
         master_process: bool,
-        wandb_run,
         testing: bool
     ) -> None:
         self.rank = int(os.environ["LOCAL_RANK"])
@@ -38,7 +36,6 @@ class Trainer():
         self.epochs_run = 0
         self.hp_dict = hp_dict
         self.world_size = world_size
-        self.wandb_run = wandb_run
         self.testing = testing
         # self._train_loss_hist = []
         # self._val_loss_hist = []
@@ -64,13 +61,12 @@ class Trainer():
         #     self._load_snaphot(self.snapshot_path)
     
     def _load_snaphot(self, snapshot_path: Path) -> None:
-        loc = f"cuda:{self.gpu_id}"
+        loc = f"cuda:{self.rank}"
         snapshot = torch.load(snapshot_path, map_location=loc)
         self.model.load_state_dict(snapshot["MODEL_STATE"])
         self.epochs_run = snapshot["EPOCHS_RUN"]
         print(f"Resuming training from snapshot at Epoch {self.epochs_run}")
     
-
     def _validation_loop(self):
         total_samples, accumulated_correct, accumulated_loss = 0, 0, 0
         tp = np.zeros(self.num_classes)
@@ -120,8 +116,8 @@ class Trainer():
             dist.reduce(torch.tensor(fn, device=self.rank), dst=0, op=dist.ReduceOp.SUM)
 
             if self.master_process:
-                global_epoch_loss = epoch_loss / self.world_size
-                accuracy = calc_accuracy(epoch_correct, total_samples)
+                global_epoch_loss = 100 * epoch_loss.item() / self.world_size
+                accuracy = calc_accuracy(epoch_correct.item(), total_samples.item())
                 f1 = calc_f1(tp, fp, fn)
                 avg_f1 = f1.mean().item()
             else:
@@ -185,7 +181,7 @@ class Trainer():
         epoch_loss = torch.tensor([epoch_loss], device=self.rank)
         epoch_correct = torch.tensor([epoch_correct], device=self.rank)
         total_samples = torch.tensor([total_samples], device=self.rank)
-        dist.reduce(accumulated_loss, dst=0, op=dist.ReduceOp.SUM)
+        dist.reduce(epoch_loss, dst=0, op=dist.ReduceOp.SUM)
         dist.reduce(epoch_correct, dst=0, op=dist.ReduceOp.SUM)
         dist.reduce(total_samples, dst=0, op=dist.ReduceOp.SUM)
         dist.reduce(torch.tensor(tp, device=self.rank), dst=0, op=dist.ReduceOp.SUM)
@@ -193,8 +189,8 @@ class Trainer():
         dist.reduce(torch.tensor(fn, device=self.rank), dst=0, op=dist.ReduceOp.SUM)
 
         if self.master_process:
-            global_epoch_loss = epoch_loss / self.world_size
-            accuracy = calc_accuracy(epoch_correct, total_samples)
+            global_epoch_loss = 100 * epoch_loss.item() / self.world_size
+            accuracy = calc_accuracy(epoch_correct.item(), total_samples.item())
             f1 = calc_f1(tp, fp, fn)
             avg_f1 = f1.mean().item()
         else:
@@ -223,26 +219,33 @@ class Trainer():
         ) = self._validation_loop()
         
         if self.master_process:
-            self.wandb_run.log({"train/loss": train_loss, 
-                                "val/loss": val_loss,
-                                "train/accuracy": train_accuracy,
-                                "val/accuracy": val_accuracy,
-                                "train/f1": train_avg_f1,
-                                "val/f1": val_avg_f1,
-                                "lr": self.hp_dict["lr"]})
+            import wandb
+            
+            wandb.log(
+                {
+                    "epoch": epoch,
+                    "train/loss": train_loss, 
+                    "val/loss": val_loss,
+                    "train/accuracy": train_accuracy,
+                    "val/accuracy": val_accuracy,
+                    "train/f1": train_avg_f1,
+                    "val/f1": val_avg_f1,
+                    "lr": self.scheduler.get_last_lr()[0]
+                }
+            )
             
             self._val_true_labels.extend(val_true_labels)
             self._val_predicted_labels.extend(val_prediced_labels)
 
+            cur_lr = self.scheduler.get_last_lr()[0]
             self.scheduler.step(val_loss)
             new_lr = self.scheduler.get_last_lr()[0]
-            if new_lr < self.hp_dict["lr"]:
-                self.hp_dict["lr"] = new_lr
+            if new_lr != cur_lr:
                 print(f"lr updated -> {new_lr}.")
 
             epoch_summary = ", ".join(
                 [
-                    f"[Epoch {epoch}/{self.max_epochs}]:",
+                    f"[Epoch {epoch}/{self.hp_dict['epochs']}]:",
                     f"Train loss {train_loss:.2f}",
                     f"Val accuracy {val_accuracy:.2f}%",
                     f"Val average F1 score: {val_avg_f1:.2f}",
@@ -268,16 +271,16 @@ class Trainer():
         beta1 = 0.9
         beta2 = 0.999
         
-        self.optimizer = optim.adamw(params=self.model.parameters(), 
+        self.optimizer = optim.AdamW(params=self.model.parameters(), 
                                      lr=self.hp_dict["lr"], 
                                      weight_decay=self.hp_dict["weight_decay"], 
                                      betas=(beta1, beta2))
         self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.1, patience=4, min_lr=1e-5)
         
-
     def train_model(self):
         self._set_optimizer_scheduler()
-        max_epochs = 3 if self.testing else self.hp_dict["epochs"]
+        # max_epochs = 2 if self.testing else self.hp_dict["epochs"]
+        max_epochs = self.hp_dict["epochs"]
 
         for epoch in tqdm(range(1, max_epochs+1), total=max_epochs):
             f1, accuracy, loss = self._run_epoch(epoch)
@@ -287,15 +290,16 @@ class Trainer():
         if self.master_process:
             summary = ", ".join(
                 [
-                    "-" * 30, 
-                    f"best val accuray {self._best['accuracy']*100:.2f} ", 
-                    f"achieved at epoch {self._best['epoch']}, ", 
+                    f"best val accuray {self._best['accuracy']:.2f}", 
+                    f"achieved at epoch {self._best['epoch']}", 
                     f"with f1 score {self._best['f1']*100:.2f}."
                 ]
             )
-            print("\n" + summary + "\n")
-        
-
+            print("-" * 30)
+            print("\n")
+            print(summary + "\n")
+            print("-" * 30)
+            print("\n")
             # self._plot_results()
 
     def _scheduler_step(self, val_loss):
@@ -304,7 +308,6 @@ class Trainer():
         if new_lr < self.lr:
             self.lr = new_lr
             print(f"lr updated -> {new_lr}.")
-
 
     def _update_hist(self, f1:dict, accuracy:dict, loss:dict) -> None:
         self._train_accuracy_history.append(accuracy["train"])
@@ -320,7 +323,7 @@ class Trainer():
             self._best["model"] = self.model
             self._best["epoch"] = epoch
             self._best["f1"] = val_f1
-            if self.gpu_id == 0:
+            if self.rank == 0:
                 self._save_snapshot(epoch)
             print("\n-------new best:-------")
 

@@ -1,7 +1,7 @@
 import os
 
 import numpy as np
-import timm
+# import timm
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, Subset
 from torch.utils.data.distributed import DistributedSampler
@@ -21,43 +21,39 @@ def prepare_dataloader(dataset: ImageFolder, batch_size: int, is_distributed) ->
     
     return dataloader
 
-def get_dataloaders(cfg, task, is_distributed, testing=False):
+def get_dataloaders(task_parent_dir, image_size:tuple[int, int], norm_params:dict, batch_size:int, is_distributed, testing=False):
     train_transforms = transforms.Compose(
         [
-            transforms.Resize(
-                (cfg.preprocessing.image_size[0], cfg.preprocessing.image_size[1])
-            ),
+            transforms.Resize(image_size),
             transforms.RandomHorizontalFlip(),
             transforms.RandomVerticalFlip(),
             # transforms.RandomRotation(30),
             transforms.ToTensor(),
             transforms.Normalize(
-                (cfg.preprocessing.norm.mean),
-                (cfg.preprocessing.norm.std),
+                (norm_params["mean"]),
+                (norm_params["std"]),
             ),
         ]
     )
     val_transforms = transforms.Compose(
         [
-            transforms.Resize(
-                (cfg.preprocessing.image_size[0], cfg.preprocessing.image_size[1])
-            ),
+            transforms.Resize(image_size),
             transforms.ToTensor(),
             transforms.Normalize(
-                (cfg.preprocessing.norm.mean),
-                (cfg.preprocessing.norm.std),
+                (norm_params["mean"]),
+                (norm_params["std"]),
             ),
         ]
     )
     # Create the dataset
     train_dataset = ImageFolder(
-        root=str(cfg["folders"][task]) + "/train", transform=train_transforms
+        root=str(task_parent_dir) + "/train", transform=train_transforms
     )
     val_dataset = ImageFolder(
-        root=str(cfg["folders"][task]) + "/val", transform=val_transforms
+        root=str(task_parent_dir) + "/val", transform=val_transforms
     )
     test_dataset = ImageFolder(
-        root=str(cfg["folders"][task]) + "/test", transform=val_transforms
+        root=str(task_parent_dir) + "/test", transform=val_transforms
     )
 
     if testing:
@@ -70,9 +66,9 @@ def get_dataloaders(cfg, task, is_distributed, testing=False):
         print(f"Train dataset has {len(train_dataset)} images")
         print(f"Val dataset has {len(val_dataset)} images")
 
-    train_loader = prepare_dataloader(train_dataset, is_distributed, cfg.hp.batch_size)
-    val_loader   = prepare_dataloader(val_dataset, is_distributed, cfg.hp.batch_size)
-    test_loader  = prepare_dataloader(test_dataset, is_distributed, cfg.hp.batch_size)
+    train_loader = prepare_dataloader(train_dataset, batch_size, is_distributed)
+    val_loader   = prepare_dataloader(val_dataset, batch_size, is_distributed)
+    test_loader  = prepare_dataloader(test_dataset, batch_size, is_distributed)
 
 
     return train_loader, val_loader, test_loader
