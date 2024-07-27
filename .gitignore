@@ -11,5 +11,3 @@ wandb/*
 
 !data/df.csv
 !data/df_meta.csv
-
-.env
