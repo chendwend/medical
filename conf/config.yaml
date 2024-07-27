@@ -1,4 +1,5 @@
-testing: True
+testing: False
+sweep_counts: 4
 
 # task: birads
 # task: mass_shape
@@ -19,7 +20,7 @@ folders:
   report: ${folders.cur_plot}/classification_report.png
 
 
-sweep_counts: 3
+
 
 preprocessing:
   # image_size: [224, 224]
