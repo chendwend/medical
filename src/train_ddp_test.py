@@ -41,6 +41,7 @@ def broadcast_object(obj, master_process):
 
     # Deserialize the byte stream back into the Python object
     obj = pickle.loads(obj_tensor.cpu().numpy().tobytes())
+    torch.distributed.barrier() 
     return obj
 
 
@@ -68,7 +69,7 @@ def train():
     # Broadcast config from rank 0 to all processes
     # config = dist.broadcast_object_list([config], src=0)[0]
     hp_dict = broadcast_object(hp_dict, rank==0)
-    
+    print(f"{rank}: {hp_dict}")
     torch.cuda.set_device(rank)
     model = SimpleModel().to(rank)
     ddp_model = DDP(model, device_ids=[rank])

@@ -3,12 +3,10 @@ import torch
 import torch.distributed as dist
 import wandb
 import pickle
-from src.dataloaders import get_dataloaders
-from src.model import CustomResNet
-from src.Trainer import Trainer
-import yaml
+from dataloaders import get_dataloaders
+from model import CustomResNet
+from Trainer import Trainer
 import hydra
-
 
 
 def broadcast_object(obj, master_process):
@@ -30,11 +28,14 @@ def broadcast_object(obj, master_process):
     obj_tensor = torch.ByteTensor(obj_bytes).to(device)
     dist.broadcast(obj_tensor, 0)
 
+    # Deserialize the byte stream back into the Python object
+    obj = pickle.loads(obj_tensor.cpu().numpy().tobytes())
+    torch.distributed.barrier() 
+    return obj
+
 def setup(rank, seed):
     dist.init_process_group("nccl" if torch.cuda.is_available() else "gloo")
     torch.manual_seed(seed) #TODO: with config
-
-    torch.cuda.set_device(rank)
 
 def cleanup():
     dist.destroy_process_group()
@@ -53,14 +54,13 @@ def train(cfg):
             wandb.init()
             config = wandb.config
             hp_dict = {k: v for k, v in dict(config).items()}
-            print(f"{master_process}: {hp_dict}")
+            # print(f"{master_process}: {hp_dict}")
         else:
             hp_dict = None
 
-        hp_dict = broadcast_object(hp_dict, master_process)
+        hp_dict = broadcast_object(hp_dict, rank==0)
+        torch.cuda.set_device(rank)
 
-
-        print(f"{master_process}: {hp_dict}")
         train_loader, val_loader, test_loader = get_dataloaders(cfg["folders"][cfg.task], cfg.preprocessing.image_size, cfg.preprocessing.norm, hp_dict["batch_size"], cfg.testing)
         model = CustomResNet(num_classes=cfg["classes_per_task"][cfg.task], model_name="resnet50")
         loss = torch.nn.CrossEntropyLoss(label_smoothing=hp_dict["label_smoothing"])

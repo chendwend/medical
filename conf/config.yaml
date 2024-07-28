@@ -1,4 +1,4 @@
-testing: False
+testing: True
 sweep_counts: 4
 
 # task: birads

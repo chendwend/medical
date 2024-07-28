@@ -324,12 +324,14 @@ class Trainer():
             self._best["epoch"] = epoch
             self._best["f1"] = val_f1
             if self.rank == 0:
-                self._save_snapshot(epoch)
+                self._save_snapshot(epoch, self.hp_dict)
             print("\n-------new best:-------")
 
-    def _save_snapshot(self, epoch):
+    def _save_snapshot(self, epoch, hp_dict):
+        name = f"epochs{hp_dict['epochs']}batch{hp_dict['batch_size']}_lr{hp_dict['lr']:.3f}_wd{hp_dict['wd']}_ls{hp_dict['label_smoothing']}"
         Path("best_models").mkdir(exist_ok=True)
-        filename=Path(f"best_models/{self.task}/best_model.pt")
+        Path(f"best_models/{self.task}").mkdir(exist_ok=True)
+        filename=Path(f"best_models/{self.task}/{name}/best_model.pt")
         filename.parent.mkdir(exist_ok=True)
 
         snapshot = {
