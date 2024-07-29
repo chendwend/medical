@@ -8,8 +8,8 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from src.metrics import calc_accuracy, calc_conf_per_class, calc_f1
-from src.plot import plot_results
+from metrics import calc_accuracy, calc_conf_per_class, calc_f1
+# from src.plot import plot_results
 
 # from typing import Union
 
@@ -275,9 +275,12 @@ class Trainer():
                                      lr=self.hp_dict["lr"], 
                                      weight_decay=self.hp_dict["weight_decay"], 
                                      betas=(beta1, beta2))
-        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.1, patience=4, min_lr=1e-5)
+        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.8, patience=10, min_lr=1e-5)
         
     def train_model(self):
+        early_stopping_patience = 10
+        epochs_without_improvement = 0
+
         self._set_optimizer_scheduler()
         # max_epochs = 2 if self.testing else self.hp_dict["epochs"]
         max_epochs = self.hp_dict["epochs"]
@@ -285,7 +288,15 @@ class Trainer():
         for epoch in tqdm(range(1, max_epochs+1), total=max_epochs):
             f1, accuracy, loss = self._run_epoch(epoch)
             if self.master_process:
-                self._update_best(accuracy["val"], f1["val"], epoch)
+                if accuracy["val"] > self._best["accuracy"]:
+                    self._update_best(accuracy["val"], f1["val"], epoch)
+                    epochs_without_improvement = 0
+                else:
+                    epochs_without_improvement += 1
+            
+            if epochs_without_improvement >= early_stopping_patience:
+                print(f"Early stopping triggered at epoch {epoch}.")
+                break
 
         if self.master_process:
             summary = ", ".join(
@@ -318,20 +329,20 @@ class Trainer():
         self._val_f1_hist.append(f1["val"])
 
     def _update_best(self, val_accuracy, val_f1, epoch:int):
-        if val_accuracy > self._best["accuracy"]:
             self._best["accuracy"] = val_accuracy
             self._best["model"] = self.model
             self._best["epoch"] = epoch
             self._best["f1"] = val_f1
             if self.rank == 0:
                 self._save_snapshot(epoch, self.hp_dict)
-            print("\n-------new best:-------")
+            print("\n-------new best:-------\n")
 
     def _save_snapshot(self, epoch, hp_dict):
-        name = f"epochs{hp_dict['epochs']}batch{hp_dict['batch_size']}_lr{hp_dict['lr']:.3f}_wd{hp_dict['wd']}_ls{hp_dict['label_smoothing']}"
+        # name = f"epochs{hp_dict['epochs']}batch{hp_dict['batch_size']}_lr{hp_dict['lr']:.3f}_wd{hp_dict['weight_decay']}_ls{hp_dict['label_smoothing']}"
+        param_string = "_".join([f"{k}={v}" for k, v in hp_dict.items()])
         Path("best_models").mkdir(exist_ok=True)
         Path(f"best_models/{self.task}").mkdir(exist_ok=True)
-        filename=Path(f"best_models/{self.task}/{name}/best_model.pt")
+        filename=Path(f"best_models/{self.task}/{param_string}/best_model.pt")
         filename.parent.mkdir(exist_ok=True)
 
         snapshot = {
@@ -341,12 +352,12 @@ class Trainer():
         torch.save(snapshot, filename)
         print(f"epoch {epoch} => Saving a new best model at {filename}")
 
-    def _plot_results(self):
-        results = {
-                "loss": (self._train_loss_hist, self._val_loss_hist),
-                "accuracy": (self._train_accuracy_history, self._val_accuracy_history, (self._best["epoch"], self._best["accuracy"])),
-                "f1": (self._train_f1_hist, self._val_f1_hist),
-                "val_true_labels": (self._val_true_labels),
-                "val_predicted_labels": (self._val_predicted_labels)
-        }
-        plot_results(Path("best_models"), results, self.task, self.class_names)
+    # def _plot_results(self):
+    #     results = {
+    #             "loss": (self._train_loss_hist, self._val_loss_hist),
+    #             "accuracy": (self._train_accuracy_history, self._val_accuracy_history, (self._best["epoch"], self._best["accuracy"])),
+    #             "f1": (self._train_f1_hist, self._val_f1_hist),
+    #             "val_true_labels": (self._val_true_labels),
+    #             "val_predicted_labels": (self._val_predicted_labels)
+    #     }
+    #     plot_results(Path("best_models"), results, self.task, self.class_names)

@@ -1,5 +1,5 @@
-testing: True
-sweep_counts: 4
+testing: False
+sweep_counts: 12
 
 # task: birads
 # task: mass_shape

@@ -1,0 +1,18 @@
+method: grid
+metric: 
+  goal: maximize
+  name: val/accuracy
+  target: 90
+parameters: 
+  epochs:
+    values: [80]
+  lr: 
+    values: [4e-3, 4.5e-3, 3.5e-3]
+  weight_decay: 
+    values: [1e-3]
+  batch_size: 
+    values: [32]
+  label_smoothing:
+    values:  [0.25, 0.35]
+  fc_layer: 
+    values: [512, 1024]

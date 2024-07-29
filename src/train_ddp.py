@@ -35,7 +35,7 @@ def broadcast_object(obj, master_process):
 
 def setup(rank, seed):
     dist.init_process_group("nccl" if torch.cuda.is_available() else "gloo")
-    torch.manual_seed(seed) #TODO: with config
+    torch.manual_seed(seed) 
 
 def cleanup():
     dist.destroy_process_group()
@@ -54,6 +54,8 @@ def train(cfg):
             wandb.init()
             config = wandb.config
             hp_dict = {k: v for k, v in dict(config).items()}
+            param_string = "_".join([f"{k}={v}" for k, v in hp_dict.items()])
+            wandb.run.name = param_string
             # print(f"{master_process}: {hp_dict}")
         else:
             hp_dict = None
@@ -62,7 +64,7 @@ def train(cfg):
         torch.cuda.set_device(rank)
 
         train_loader, val_loader, test_loader = get_dataloaders(cfg["folders"][cfg.task], cfg.preprocessing.image_size, cfg.preprocessing.norm, hp_dict["batch_size"], cfg.testing)
-        model = CustomResNet(num_classes=cfg["classes_per_task"][cfg.task], model_name="resnet50")
+        model = CustomResNet(num_classes=cfg["classes_per_task"][cfg.task], model_name="resnet50", fc_layer=hp_dict["fc_layer"])
         loss = torch.nn.CrossEntropyLoss(label_smoothing=hp_dict["label_smoothing"])
 
         trainer = Trainer(cfg.task, 
