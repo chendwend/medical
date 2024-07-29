@@ -63,7 +63,7 @@ def train(cfg):
         hp_dict = broadcast_object(hp_dict, rank==0)
         torch.cuda.set_device(rank)
 
-        train_loader, val_loader, test_loader = get_dataloaders(cfg["folders"][cfg.task], cfg.preprocessing.image_size, cfg.preprocessing.norm, hp_dict["batch_size"], cfg.testing)
+        train_loader, val_loader, test_loader = get_dataloaders(cfg["folders"][cfg.task], cfg.preprocessing.image_size, cfg.preprocessing.norm, hp_dict["batch_size"], world_size, rank, cfg.testing)
         model = CustomResNet(num_classes=cfg["classes_per_task"][cfg.task], model_name="resnet50", fc_layer=hp_dict["fc_layer"])
         loss = torch.nn.CrossEntropyLoss(label_smoothing=hp_dict["label_smoothing"])
 

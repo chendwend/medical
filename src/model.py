@@ -1,4 +1,4 @@
-import timm
+# import timm
 import torch.nn as nn
 from torchvision.models import (ResNet50_Weights, ResNet101_Weights,
                                 ResNet152_Weights, resnet50, resnet101,
@@ -38,8 +38,6 @@ class CustomResNet(nn.Module):
         
         for param in self.resnet.fc.parameters():
             param.requires_grad = True
-
-
 
     def forward(self, x):
         return self.resnet(x)
