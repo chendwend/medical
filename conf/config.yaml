@@ -1,5 +1,7 @@
 testing: False
+
 sweep_counts: 12
+early_stopping_patience: 20
 
 # task: birads
 # task: mass_shape

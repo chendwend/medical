@@ -1,12 +1,14 @@
 import os
+import pickle
+
+import hydra
 import torch
 import torch.distributed as dist
+
 import wandb
-import pickle
 from dataloaders import get_dataloaders
 from model import CustomResNet
 from Trainer import Trainer
-import hydra
 
 
 def broadcast_object(obj, master_process):
@@ -38,8 +40,11 @@ def setup(rank, seed):
     torch.manual_seed(seed) 
 
 def cleanup():
+    print(f"before destroy")
     dist.destroy_process_group()
+    print(f"After destroy")
     torch.cuda.empty_cache()
+    print(f"After empty cache")
 
 @hydra.main(version_base="1.3", config_path="../conf", config_name="config")
 def train(cfg):
