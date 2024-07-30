@@ -275,9 +275,10 @@ class Trainer():
             f1, accuracy, loss = self._run_epoch(epoch)
             if self.master_process:
                 self.stop = self.stopper(accuracy["val"], epoch)
-                self._is_best = self._best(accuracy["val"], f1["val"], epoch, self.model)      
+                self._is_best = self._best(accuracy["val"], f1["val"], epoch, self.model)
+                if self._is_best:
+                    self._save_snapshot(epoch, self.hp_dict, self.date_time)
             
-            if self.master_process:
                 epoch_summary = ", ".join(
                     [
                         f"[Epoch {epoch}/{self.hp_dict['epochs']}]:",
@@ -293,9 +294,7 @@ class Trainer():
             self.stop = broadcast_list[0]
             if self.stop:
                 break # must break all DDP ranks
-            if self._is_best:
-                self._save_snapshot(epoch, self.hp_dict, self.date_time)
-
+                
         if self.master_process:
             summary = ", ".join(
                 [
