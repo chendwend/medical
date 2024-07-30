@@ -43,7 +43,7 @@ class Trainer():
         self.testing = testing
         self._val_true_labels = []
         self._val_predicted_labels = []
-        self._best = BestModel()
+        self._best, self._is_best = BestModel(), True
         self.task = task
         self.class_names = class_names
         self.num_classes = len(class_names)
@@ -117,7 +117,7 @@ class Trainer():
                 global_epoch_loss = 100 * epoch_loss.item() / self.world_size
                 accuracy = calc_accuracy(epoch_correct.item(), total_samples.item())
                 f1 = calc_f1(tp, fp, fn)
-                avg_f1 = f1.mean().item()
+                avg_f1 = 100 * f1.mean().item()
             else:
                 global_epoch_loss, accuracy, avg_f1 = None, None, None
 
@@ -190,7 +190,7 @@ class Trainer():
             global_epoch_loss = 100 * epoch_loss.item() / self.world_size
             accuracy = calc_accuracy(epoch_correct.item(), total_samples.item())
             f1 = calc_f1(tp, fp, fn)
-            avg_f1 = f1.mean().item()
+            avg_f1 = 100 * f1.mean().item()
         else:
             global_epoch_loss, accuracy, avg_f1 = None, None, None
 
@@ -239,16 +239,7 @@ class Trainer():
             self.scheduler.step(val_loss)
             new_lr = self.scheduler.get_last_lr()[0]
             if new_lr != cur_lr:
-                print(f"lr updated -> {new_lr}.")
-
-            epoch_summary = ", ".join(
-                [
-                    f"[Epoch {epoch}/{self.hp_dict['epochs']}]:",
-                    f"Train loss {train_loss:.2f}",
-                    f"Val accuracy {val_accuracy:.2f}%",
-                    f"Val average F1 score: {val_avg_f1:.2f}",
-                ]
-            )
+                print(f"\nlr updated -> {new_lr}.\n")
 
             f1 = {"train": train_avg_f1,
                 "val": val_avg_f1}
@@ -258,7 +249,6 @@ class Trainer():
             
             loss = {"train": train_loss,
                     "val": val_loss}
-            print("\n" + epoch_summary + "\n")
 
             return f1, accuracy, loss
         return None, None, None
@@ -273,7 +263,7 @@ class Trainer():
                                      lr=self.hp_dict["lr"], 
                                      weight_decay=self.hp_dict["weight_decay"], 
                                      betas=(beta1, beta2))
-        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.8, patience=10, min_lr=1e-5)
+        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, mode='min', factor=0.8, patience=15, min_lr=1e-5)
         
     def train_model(self):
 
@@ -281,28 +271,36 @@ class Trainer():
         # max_epochs = 2 if self.testing else self.hp_dict["epochs"]
         max_epochs = self.hp_dict["epochs"]
 
-        for epoch in tqdm(range(1, max_epochs+1), total=max_epochs):
-            stop = False
-            is_best = False
+        for epoch in tqdm(range(1, max_epochs+1), total=max_epochs,  disable=(not(self.master_process)), colour='green'):
             f1, accuracy, loss = self._run_epoch(epoch)
             if self.master_process:
-                stop = self.stopper(accuracy["val"], epoch)
-                is_best = self._best(accuracy["val"], f1["val"], epoch, self.model)            
+                self.stop = self.stopper(accuracy["val"], epoch)
+                self._is_best = self._best(accuracy["val"], f1["val"], epoch, self.model)      
+                      
+            epoch_summary = ", ".join(
+                [
+                    f"[Epoch {epoch}/{self.hp_dict['epochs']}]:",
+                    f"Train/val loss {loss['train']:.2f}|{loss['val']:.2f}",
+                    f"Val F1 score: {f1['val']:.2f}%",
+                    f"Val accuracy {accuracy['val']:.2f}|{self._best.accuracy:.2f}%",
+                ]
+            )
+            print("\n" + epoch_summary + "\n")
 
             broadcast_list = [self.stop if self.master_process else None]
             dist.broadcast_object_list(broadcast_list, 0)  # broadcast 'stop' to all ranks
             self.stop = broadcast_list[0]
             if self.stop:
                 break # must break all DDP ranks
-            if is_best:
+            if self._is_best:
                 self._save_snapshot(epoch, self.hp_dict, self.date_time)
 
         if self.master_process:
             summary = ", ".join(
                 [
-                    f"best val accuray {self._best['accuracy']:.2f}", 
-                    f"achieved at epoch {self._best['epoch']}", 
-                    f"with f1 score {self._best['f1']*100:.2f}."
+                    f"best val accuray {self._best.accuracy:.2f}", 
+                    f"achieved at epoch {self._best.epoch}", 
+                    f"with f1 score {self._best.f1:.2f}."
                 ]
             )
             print("-" * 30)
@@ -310,7 +308,6 @@ class Trainer():
             print(summary + "\n")
             print("-" * 30)
             print("\n")
-            # self._plot_results()
 
     def _scheduler_step(self, val_loss):
         self.scheduler.step(val_loss)
@@ -318,14 +315,6 @@ class Trainer():
         if new_lr < self.lr:
             self.lr = new_lr
             print(f"lr updated -> {new_lr}.")
-
-    def _update_hist(self, f1:dict, accuracy:dict, loss:dict) -> None:
-        self._train_accuracy_history.append(accuracy["train"])
-        self._val_accuracy_history.append(accuracy["val"])
-        self._train_loss_hist.append(loss["train"])
-        self._val_loss_hist.append(loss["val"])
-        self._train_f1_hist.append(f1["train"])
-        self._val_f1_hist.append(f1["val"])
 
     def _save_snapshot(self, epoch:int, hp_dict:dict, date_time:str) -> None:
         param_string = "_".join([f"{k}={v}" for k, v in hp_dict.items()])
@@ -339,4 +328,4 @@ class Trainer():
             "EPOCHS_RUN": epoch,
         }
         torch.save(snapshot, filename)
-        print(f"epoch {epoch} => Saving a new best model at {filename}")
+        print(f"epoch {epoch} => Saving a new best model.")

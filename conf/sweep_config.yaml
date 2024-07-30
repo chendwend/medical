@@ -2,12 +2,12 @@ method: grid
 metric: 
   goal: maximize
   name: val/accuracy
-  target: 90
+  target: 93
 parameters: 
   epochs:
-    values: [80]
+    values: [150]
   lr: 
-    values: [4e-3, 4.5e-3, 3.5e-3]
+    values: [3.5e-3, 4.5e-3, 5.5e-3]
   weight_decay: 
     values: [1e-3]
   batch_size: 

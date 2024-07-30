@@ -40,11 +40,8 @@ def setup(rank, seed):
     torch.manual_seed(seed) 
 
 def cleanup():
-    print(f"before destroy")
     dist.destroy_process_group()
-    print(f"After destroy")
     torch.cuda.empty_cache()
-    print(f"After empty cache")
 
 @hydra.main(version_base="1.3", config_path="../conf", config_name="config")
 def train(cfg):
@@ -79,6 +76,7 @@ def train(cfg):
                             loss,
                             cfg["class_names"][cfg.task],
                             hp_dict,
+                            cfg["early_stopping_patience"],
                             world_size=world_size,
                             master_process=master_process,
                             testing=cfg.testing,
