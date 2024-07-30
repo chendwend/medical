@@ -276,16 +276,17 @@ class Trainer():
             if self.master_process:
                 self.stop = self.stopper(accuracy["val"], epoch)
                 self._is_best = self._best(accuracy["val"], f1["val"], epoch, self.model)      
-                      
-            epoch_summary = ", ".join(
-                [
-                    f"[Epoch {epoch}/{self.hp_dict['epochs']}]:",
-                    f"Train/val loss {loss['train']:.2f}|{loss['val']:.2f}",
-                    f"Val F1 score: {f1['val']:.2f}%",
-                    f"Val accuracy {accuracy['val']:.2f}|{self._best.accuracy:.2f}%",
-                ]
-            )
-            print("\n" + epoch_summary + "\n")
+            
+            if self.master_process:
+                epoch_summary = ", ".join(
+                    [
+                        f"[Epoch {epoch}/{self.hp_dict['epochs']}]:",
+                        f"Train/val loss {loss['train']:.2f}|{loss['val']:.2f}",
+                        f"Val F1 score: {f1['val']:.2f}%",
+                        f"Val accuracy {accuracy['val']:.2f}|{self._best.accuracy:.2f}%",
+                    ]
+                )
+                print("\n" + epoch_summary + "\n")
 
             broadcast_list = [self.stop if self.master_process else None]
             dist.broadcast_object_list(broadcast_list, 0)  # broadcast 'stop' to all ranks
