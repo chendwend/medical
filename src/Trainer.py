@@ -11,6 +11,7 @@ from tqdm import tqdm
 
 from metrics import calc_accuracy, calc_conf_per_class, calc_f1
 from torch_utils import BestModel, EarlyStopping
+from utils import time_it
 
 # from src.plot import plot_results
 
@@ -29,7 +30,7 @@ class Trainer():
         patience: int,
         world_size: int,
         master_process: bool,
-        testing: bool
+        testing: bool,
     ) -> None:
         self.rank = int(os.environ["LOCAL_RANK"])
         self.model = DDP(model.to(self.rank), device_ids=[self.rank])
@@ -40,6 +41,7 @@ class Trainer():
         self.hp_dict = hp_dict
         self.stopper, self.stop = EarlyStopping(patience), False
         self.world_size = world_size
+        self.master_process = master_process
         self.testing = testing
         self._val_true_labels = []
         self._val_predicted_labels = []
@@ -47,7 +49,7 @@ class Trainer():
         self.task = task
         self.class_names = class_names
         self.num_classes = len(class_names)
-        self.master_process = master_process
+        
         
         now = datetime.now()
         self.date_time = now.strftime("%d_%m_%Y_%H_%M")
@@ -136,6 +138,7 @@ class Trainer():
 
         return avg_f1, global_epoch_loss, accuracy, combined_true_labels, combined_predicted_labels
     
+    
     def _train_loop(self):
         accumulated_loss = 0
         total_samples = 0
@@ -197,6 +200,7 @@ class Trainer():
 
         return avg_f1, global_epoch_loss, accuracy
 
+    @time_it
     def _run_epoch(self, epoch):
 
         self.train_data.sampler.set_epoch(epoch)
@@ -217,20 +221,21 @@ class Trainer():
         ) = self._validation_loop()
         
         if self.master_process:
-            import wandb
-            
-            wandb.log(
-                {
-                    "epoch": epoch,
-                    "train/loss": train_loss, 
-                    "val/loss": val_loss,
-                    "train/accuracy": train_accuracy,
-                    "val/accuracy": val_accuracy,
-                    "train/f1": train_avg_f1,
-                    "val/f1": val_avg_f1,
-                    "lr": self.scheduler.get_last_lr()[0]
-                }
-            )
+            if not(self.testing):
+                import wandb
+                
+                wandb.log(
+                    {
+                        "epoch": epoch,
+                        "train/loss": train_loss, 
+                        "val/loss": val_loss,
+                        "train/accuracy": train_accuracy,
+                        "val/accuracy": val_accuracy,
+                        "train/f1": train_avg_f1,
+                        "val/f1": val_avg_f1,
+                        "lr": self.scheduler.get_last_lr()[0]
+                    }
+                )
             
             self._val_true_labels.extend(val_true_labels)
             self._val_predicted_labels.extend(val_prediced_labels)
@@ -268,16 +273,16 @@ class Trainer():
     def train_model(self):
 
         self._set_optimizer_scheduler()
-        # max_epochs = 2 if self.testing else self.hp_dict["epochs"]
-        max_epochs = self.hp_dict["epochs"]
+        max_epochs = 2 if self.testing  else self.hp_dict["epochs"]
+        # max_epochs = self.hp_dict["epochs"]
 
         for epoch in tqdm(range(1, max_epochs+1), total=max_epochs,  disable=(not(self.master_process)), colour='green'):
-            f1, accuracy, loss = self._run_epoch(epoch)
-            if self.master_process:
+            (f1, accuracy, loss), exec_time = self._run_epoch(epoch)
+            if self.master_process and not self.testing:
                 self.stop = self.stopper(accuracy["val"], epoch)
                 self._is_best = self._best(accuracy["val"], f1["val"], epoch, self.model)
                 if self._is_best:
-                    self._save_snapshot(epoch, self.hp_dict, self.date_time)
+                    self._save_snapshot(epoch, self.hp_dict, self.date_time, threshold=90.0, metric=accuracy["val"])
             
                 epoch_summary = ", ".join(
                     [
@@ -308,6 +313,8 @@ class Trainer():
             print(summary + "\n")
             print("-" * 30)
             print("\n")
+        
+        return exec_time
 
     def _scheduler_step(self, val_loss):
         self.scheduler.step(val_loss)
@@ -316,16 +323,17 @@ class Trainer():
             self.lr = new_lr
             print(f"lr updated -> {new_lr}.")
 
-    def _save_snapshot(self, epoch:int, hp_dict:dict, date_time:str) -> None:
-        param_string = "_".join([f"{k}={v}" for k, v in hp_dict.items()])
-        Path("best_models").mkdir(exist_ok=True)
-        Path(f"best_models/{self.task}").mkdir(exist_ok=True)
-        filename=Path(f"best_models/{self.task}/{param_string}-{date_time}/best_model.pt")
-        filename.parent.mkdir(exist_ok=True)
+    def _save_snapshot(self, epoch:int, hp_dict:dict, date_time:str, threshold:float, metric:float) -> None:
+        if metric > threshold:
+            param_string = "_".join([f"{k}={v}" for k, v in hp_dict.items()])
+            Path("best_models").mkdir(exist_ok=True)
+            Path(f"best_models/{self.task}").mkdir(exist_ok=True)
+            filename=Path(f"best_models/{self.task}/{param_string}-{date_time}/best_model.pt")
+            filename.parent.mkdir(exist_ok=True)
 
-        snapshot = {
-            "MODEL_STATE": self.model.module.state_dict(),
-            "EPOCHS_RUN": epoch,
-        }
-        torch.save(snapshot, filename)
-        print(f"epoch {epoch} => Saving a new best model.")
+            snapshot = {
+                "MODEL_STATE": self.model.module.state_dict(),
+                "EPOCHS_RUN": epoch,
+            }
+            torch.save(snapshot, filename)
+            print(f"epoch {epoch} => Saving a new best model.")

@@ -33,3 +33,31 @@ def remove_dir(dir_path) -> None:
     if dirpath.exists():
         # Delete the directory, even if it is not empty
         shutil.rmtree(dirpath)
+
+
+def clean_directory(path):
+    """
+    Recursively delete all files and subdirectories in a given directory.
+    
+    :param path: Pathlib Path object or string of the directory to clean.
+    """
+    dir_path = Path(path)
+    if dir_path.exists() and dir_path.is_dir():
+        for item in dir_path.iterdir():
+            if item.is_dir():
+                shutil.rmtree(item)  # Recursively delete directory
+            else:
+                item.unlink()  # Delete file
+        print(f"All contents removed from {dir_path}")
+    else:
+        print(f"The directory {dir_path} does not exist or is not a directory.")
+
+def time_it(func):
+    from time import perf_counter
+    def wrapper(*args, **kwargs):
+        start_time = perf_counter()
+        result = func(*args, **kwargs)
+        end_time = perf_counter()
+        run_time = end_time - start_time
+        return result, run_time
+    return wrapper

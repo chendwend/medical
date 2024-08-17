@@ -1,8 +1,10 @@
+import argparse
 import os
 import subprocess
 
 import hydra
 from dotenv import load_dotenv
+from omegaconf import DictConfig
 
 import wandb
 
@@ -40,21 +42,82 @@ def calculate_combinations(parameters:dict) -> int:
     return len(list(itertools.product(*values)))
 
 
-def run_training():
-    from torch.cuda import device_count
+def run_training(gpu_devices:str, gpu_device_count:int, task:str, model:str, workers:bool=False, nnodes:int=1):
+    env = os.environ.copy()
+    env["CUDA_VISIBLE_DEVICES"] = str(gpu_devices)
+    command = [
+        "torchrun",
+        f"--nproc_per_node={str(gpu_device_count)}",
+        f"--nnodes={str(nnodes)}",
+        "src/train_ddp.py",
+        f"--model={model}",
+        f"--task={task}"
+    ]
 
-    num_gpus = device_count()
+    if workers:
+        command.append("-w")
+
+    result = subprocess.run(command, env=env, check=True)
+    if result.returncode == 0:
+        print("Sweep finished Successfully")
+    else:
+        print("------Sweep FAILED------")
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m","--model" , help="model type",  choices=["resnet50", "resnet101", "resnet152"])
+    parser.add_argument("-t", "--task", help="type of task", choices=["pathology", "birads", "mass_shape"])
+    parser.add_argument("-d", "--devices", nargs="+", type=str, help="list of selected devices")
+    parser.add_argument("-w", "--workers", help="test num_workes", action="store_true")
+
+    args = parser.parse_args()
+
+    try:
+        device_list = args.devices
+    except KeyError:
+        from torch.cuda import device_count
+        device_list = list(range(device_count))
+
+    args.devices = ",".join(device_list)
+    args.num_devices = len(device_list)
+
     
-    wandb.init()
-    subprocess.run(["torchrun", f"--nproc_per_node={num_gpus}", "--nnodes=1", "src/train_ddp.py"])
+    return args
 
-@hydra.main(version_base="1.3", config_path="conf", config_name="config")
-def main(cfg):
 
-    sweep_id, sweep_count = setup_wandb(cfg.sweep_counts)
-    print(f"Initiating with sweep counts = {sweep_count}.")
-    wandb.agent(sweep_id, function=run_training, count=sweep_count, project="medical")
+def main(cfg:DictConfig):
+    if not cfg.workers:
+        sweep_id, sweep_count = setup_wandb(cfg.sweep_counts)
+        print(f"Initiating with sweep counts = {sweep_count}.")
+        wandb.agent(sweep_id, 
+                    function=lambda: run_training(cfg.gpu_devices, 
+                                                  cfg.gpu_device_count, 
+                                                  cfg.task, 
+                                                  cfg.model), 
+                    count=sweep_count, 
+                    project="medical")
+    else:
+        run_training(cfg.gpu_devices, 
+                     cfg.gpu_device_count, 
+                     cfg.task, 
+                     cfg.model, 
+                     cfg.workers,
+                     1)
+
 
 if __name__ == "__main__":
     os.system('clear')
-    main()
+    
+    args = parse_args()
+
+    overrides = [
+        f"model={args.model}",
+        f"gpu_devices={args.devices}",
+        f"gpu_device_count={args.num_devices}",
+        f"task={args.task}",
+        f"workers={args.workers}"
+    ]
+
+    with hydra.initialize(version_base="1.3", config_path="conf"):
+        cfg = hydra.compose(config_name="config", overrides=overrides)
+        main(cfg)

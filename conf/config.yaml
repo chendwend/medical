@@ -6,6 +6,13 @@ early_stopping_patience: 20
 # task: birads
 # task: mass_shape
 task: pathology
+model: resnet50
+
+gpu_devices: "0, 1, 2, 3"
+gpu_device_count: 4
+workers: False
+num_workers: 4
+
 
 
 folders:
@@ -24,6 +31,8 @@ folders:
 
 
 
+
+
 preprocessing:
   # image_size: [224, 224]
   image_size: [256, 256]
@@ -35,10 +44,10 @@ hp:
   batch_size: 32
   lr: 0.01
   weight_decay: 0.01
-  epochs: 30
+  epochs: 2
   label_smoothing: 0.25
   lr_patience: 4
-
+  fc_layer: 512
 
 
 classes_per_task:
