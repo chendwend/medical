@@ -44,7 +44,7 @@ def calculate_combinations(parameters:dict) -> int:
 
 def run_training(gpu_devices:str, gpu_device_count:int, task:str, model:str, workers:bool=False, nnodes:int=1):
     env = os.environ.copy()
-    env["CUDA_VISIBLE_DEVICES"] = str(gpu_devices)
+    env["CUDA_VISIBLE_DEVICES"] = ", ".join([str(a) for a in gpu_devices])
     command = [
         "torchrun",
         f"--nproc_per_node={str(gpu_device_count)}",
