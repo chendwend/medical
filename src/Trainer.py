@@ -10,8 +10,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from metrics import calc_accuracy, calc_conf_per_class, calc_f1
-from torch_utils import BestModel, EarlyStopping
-from utils import time_it
+from utils import BestModel, EarlyStopping, time_it
 
 # from src.plot import plot_results
 

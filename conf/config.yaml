@@ -28,11 +28,6 @@ folders:
   f1: ${folders.cur_plot}/f1.png
   report: ${folders.cur_plot}/classification_report.png
 
-
-
-
-
-
 preprocessing:
   # image_size: [224, 224]
   image_size: [256, 256]
@@ -54,6 +49,7 @@ classes_per_task:
   pathology: 2
   mass_shape: 4
   birads: 5
+  breast_density: 4
 
 class_names:
   assessment: ["0", "3", "4", "5"]

@@ -1,0 +1,1000 @@
+  882  wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
+  883  sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
+  884  wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda-repo-wsl-ubuntu-11-8-local_11.8.0-1_amd64.deb
+  885  sudo dpkg -i cuda-repo-wsl-ubuntu-11-8-local_11.8.0-1_amd64.deb
+  886  sudo cp /var/cuda-repo-wsl-ubuntu-11-8-local/cuda-9EA88183-keyring.gpg /usr/share/keyrings/
+  887  sudo dpkg -i cuda-repo-wsl-ubuntu-11-8-local_11.8.0-1_amd64.deb
+  888  sudo cp /var/cuda-repo-wsl-ubuntu-11-8-local/cuda-*-keyring.gpg /usr/share/keyrings/
+  889  sudo apt-get update
+  890  sudo apt-get -y install cuda
+  891  nvcc --version
+  892  conda activate reliefs_classification
+  893  /home/kostya/miniconda3/envs/reliefs_classification/bin/python /home/kostya/projects/reliefs_classification/src/model.py
+  894  nvidia-smi
+  895  nvcc --version
+  896  conda activate reliefs_classification
+  897  conda install pytorch torchvision pytorch-cuda=11.8 -c pytorch -c nvidia
+  898  source /home/kostya/playground/test/bin/activate
+  899  /home/kostya/playground/test/bin/python /home/kostya/playground/dataclasses_playground.py
+  900  source /home/kostya/playground/test/bin/activate
+  901  /home/kostya/playground/test/bin/python /home/kostya/playground/dataclasses_playground.py
+  902  pip list
+  903  python --ver
+  904  python3 --ver
+  905  /home/kostya/playground/test/bin/python /home/kostya/playground/dataclasses_playground.py
+  906  clear
+  907  /home/kostya/playground/test/bin/python /home/kostya/playground/dataclasses_playground.py
+  908  /home/kostya/playground/test/bin/python /home/kostya/playground/logging.py
+  909  /home/kostya/playground/test/bin/python /home/kostya/playground/logging_playground.py
+  910  clear
+  911  /home/kostya/playground/test/bin/python /home/kostya/playground/logging_playground.py
+  912  source /home/kostya/playground/test/bin/activate
+  913  gcc -v
+  914  sudo apt-get update
+  915  clear
+  916  conda activate reliefs_classification
+  917  /home/kostya/miniconda3/envs/reliefs_classification/bin/python /home/kostya/projects/reliefs_classification/src/model.py
+  918  conda activate reliefs_classification
+  919  conda activate reliefs_classification
+  920  pwd
+  921  conda list
+  922  conda activate reliefs_classification
+  923  if len(data)>1: cd /home/kostya/projects/reliefs_classification ; /usr/bin/env /home/kostya/miniconda3/envs/reliefs_classification/bin/python /home/kostya/.vscode-server/extensions/ms-python.python-2023.14.0/pythonFiles/lib/python/debugpy/adapter/../../debugpy/launcher 41833 -- /home/kostya/projects/reliefs_classification/src/model.py 
+  924  /home/kostya/miniconda3/envs/reliefs_classification/bin/python /home/kostya/projects/reliefs_classification/src/model.py
+  925  conda install -c conda-forge scikit-learn
+  926  /home/kostya/miniconda3/envs/reliefs_classification/bin/python /home/kostya/projects/reliefs_classification/src/model.py
+  927  conda activate reliefs_classification
+  928  /home/kostya/miniconda3/envs/reliefs_classification/bin/python /home/kostya/projects/reliefs_classification/main.py
+  929  conda activate reliefs_classification
+  930  conda install -c conda-forge opencv
+  931  conda activate reliefs_classification
+  932  /home/kostya/miniconda3/envs/reliefs_classification/bin/python /home/kostya/projects/reliefs_classification/src/download_raw_images.py
+  933  conda activate reliefs_classification
+  934  cd ~/.ssh/
+  935  cd ..
+  936  mkdir .ssh/
+  937  ls
+  938  ls -al
+  939  cd .ssh
+  940  ls
+  941  ls -al
+  942  chmod 600 newvm.pem
+  943  ls -al
+  944  touch config
+  945  code config 
+  946  ssh -T git@gitlab.com
+  947  code config 
+  948  ls
+  949  ssh-add -l
+  950  eval $(ssh-agent)
+  951  ssh-add ~/.ssh/newvm.pem
+  952  ssh-add -l
+  953  ssh -T git@gitlab.com
+  954  ssh -vvvv git@gitlab.com
+  955  clear
+  956  ssh-keygen -t ed25519 -C "gitlab_ssh"
+  957  cd ..
+  958  ls
+  959  cd DH
+  960  ls
+  961  git clone git@gitlab.com:roeylalazar/uniapp.git
+  962  workon
+  963  conda deactivate
+  964  virtualenv -p python3.10 cured
+  965  workon
+  966  pipenv
+  967  virtualenv -p python3.9 cured
+  968  workon cured
+  969  cd ../..
+  970  ls
+  971  sudo apt update
+  972  sudo apt install python3.9
+  973  python --version
+  974  python3 --version
+  975  python3,9 --version
+  976  python3.9 --version
+  977  ls
+  978  ls -al
+  979  code .bashrc 
+  980  virtualenv -p python3.9 cured
+  981  cd .local/bin/
+  982  ls
+  983  cat virtualenvwrapper.sh 
+  984  clear
+  985  which python3.9
+  986  source ~/.bashrc 
+  987  mkvirtualenv -p python3.9 cured
+  988  workon
+  989  clear
+  990  conda deactivate
+  991  cd ../../
+  992  cd .virtualenvs/
+  993  ls
+  994  sudo rm -rf cured/
+  995  ls
+  996  mkvirtualenv -p python3.9 cured
+  997  sudo rm -rf cured/
+  998  source ~/.bashrc 
+  999  code ../.bashrc
+ 1000  conda deactivate
+ 1001  source ~/.bashrc 
+ 1002  conda deactivate
+ 1003  workon
+ 1004  mkvirtualenv -p python3.9 cured
+ 1005  cd ../
+ 1006  cd DH
+ 1007  ls
+ 1008  cd uniapp/
+ 1009  ls
+ 1010  cd server
+ 1011  ls
+ 1012  workon
+ 1013  pip install -r requirements.txt 
+ 1014  pip lost
+ 1015  pip list
+ 1016  pip --version
+ 1017  pip install --force-reinstall distutils
+ 1018  python3.9 --version
+ 1019  workon CBIS-DDSM
+ 1020  pip --version
+ 1021  workon cured
+ 1022  pip --version
+ 1023  sudo apt install python3.9-distutils
+ 1024  pip --version
+ 1025  pip install -r requirements.txt 
+ 1026  clear
+ 1027  ssh -h
+ 1028  cd src/db_utils/cured/
+ 1029  ls
+ 1030  source pull_cured_from_server.sh 
+ 1031  clear
+ 1032  source pull_cured_from_server.sh 
+ 1033  udo apt install graphicsmagick-imagemagick-compat
+ 1034  sudo apt install graphicsmagick-imagemagick-compat
+ 1035  mogrify --version
+ 1036  clear
+ 1037  source pull_cured_from_server.sh 
+ 1038  sudo apt-get install mongodb
+ 1039  conda deactivate
+ 1040  sudo apt install mongodb-org
+ 1041  cat /etc/lsb-release
+ 1042  sudo apt-get install gnupg curl
+ 1043  curl -fsSL https://pgp.mongodb.com/server-7.0.asc |    sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg    --dearmor
+ 1044  echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+ 1045  sudo apt-get update
+ 1046  sudo apt-get install -y mongodb-org
+ 1047  sudo systemctl start mongod
+ 1048  sudo service mongod start
+ 1049  sudo systemctl start mongod
+ 1050  ps --no-headers -o comm 1
+ 1051  sudo service mongod start
+ 1052  ps -e | grep 'mongod'
+ 1053  sudo systemctl enable mongod
+ 1054  sudo systemctl status mongod
+ 1055  sudo service mongod start
+ 1056  mongo
+ 1057  sudo apt-get install -y mongodb-org
+ 1058  mondodb
+ 1059  mongodb
+ 1060  mongodb--org
+ 1061  mongodb-org
+ 1062  mongo
+ 1063  mongodb
+ 1064  mongod
+ 1065  sudo systemctl status mongod
+ 1066  sudo service mongod start
+ 1067  sudo service mongodb start
+ 1068  ls /etc
+ 1069  cat /etc/mongod.conf 
+ 1070  mongod --version
+ 1071  mkdir -p ~/mongodb/db
+ 1072  sudo mongod --dbpath ~/mongodb/db
+ 1073  conda deactivate
+ 1074  clear
+ 1075  sudo mongo --dbpath ~/mongodb/db
+ 1076  sudo apt install -y mongodb-clients
+ 1077  sudo apt install mongodb-tools
+ 1078  mongo
+ 1079  sudo apt-get list --installed | grep mongodb
+ 1080  mongosh
+ 1081  mongoimport
+ 1082  mongod -h
+ 1083  conda deactivate
+ 1084  mongosh
+ 1085  mongosh -h
+ 1086  mongod --version
+ 1087  mongosh
+ 1088  mongod
+ 1089  code /etc/mongod.conf
+ 1090  systemctl status mongod
+ 1091  ps aux | grep mongod
+ 1092  ping 127.0.0.1
+ 1093  sudo ufw status
+ 1094  cd /var/log/mongodb
+ 1095  ls
+ 1096  ls -al
+ 1097  mongosh
+ 1098  ls -al
+ 1099  ls
+ 1100  ls -a
+ 1101  ls -al
+ 1102  cd ~
+ 1103  ;s
+ 1104  ls
+ 1105  cd mongodb/
+ 1106  ls
+ 1107  cd db/
+ 1108  ls
+ 1109  ls -al
+ 1110  clear
+ 1111  service mongod status
+ 1112  systemctl status mongod
+ 1113  cs !
+ 1114  cd ~
+ 1115  ls
+ 1116  cd /usr/bin/
+ 1117  ls
+ 1118  sudo mongod
+ 1119  service mongod status
+ 1120  sudo mongod > ~/mongodb/mongo.txt
+ 1121  code ~/mongodb/mongo.txt 
+ 1122  sudo mongod --dbpath ~/mongodb/
+ 1123  sudo mongod --dbpath ~/mongodb/ > ~/mongodb/mongo.txt 
+ 1124  sudo service mongod status
+ 1125  service mongod status
+ 1126  mongosh
+ 1127  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1128  pip list
+ 1129  conda deactivate
+ 1130  pip list
+ 1131  which
+ 1132  workon
+ 1133  workon kivy_app
+ 1134  workon cured
+ 1135  code ~/.bashrc 
+ 1136  history
+ 1137  workon
+ 1138  workon cured
+ 1139  export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.9
+ 1140  workon cured
+ 1141  export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
+ 1142  workon cured
+ 1143  export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.10
+ 1144  workon cured
+ 1145  pip list
+ 1146  export VIRTUALENVWRAPPER_PYTHON=~\.virtualenvs\cured\bin\python3.9
+ 1147  workon cured
+ 1148  export VIRTUALENVWRAPPER_PYTHON=~/.virtualenvs/cured/bin/python3.9
+ 1149  workon cured
+ 1150  pip list
+ 1151  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1152  pip install pymongo
+ 1153  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1154  /home/kostya/.virtualenvs/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1155  cd server/src/db_utils/
+ 1156  mongo
+ 1157  conda activate reliefs_classification
+ 1158  conda list
+ 1159  pwd
+ 1160  cd server/src/db_utils/
+ 1161  /home/kostya/.virtualenvs/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1162  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.p
+ 1163  pip freeze
+ 1164  cd ..
+ 1165  source cured/bin/activate
+ 1166  workon
+ 1167  deactivate 
+ 1168  workon
+ 1169  deactivate 
+ 1170  conda deactivate
+ 1171  source cured/bin/activate
+ 1172  pip freeze
+ 1173  /home/kostya/.virtualenvs/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1174  cd server/
+ 1175  where python
+ 1176  which python
+ 1177  pip install -r requirements.txt 
+ 1178  pip freeze
+ 1179  python --version
+ 1180  pip list
+ 1181  which pip
+ 1182  pip install -r requirements.txt 
+ 1183  pip list
+ 1184  python -m pip install Pillow
+ 1185  pip list
+ 1186  python -m pip install requirements.txt 
+ 1187  python -m pip install -r requirements.txt 
+ 1188  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1189  cd db_utils/
+ 1190  ls
+ 1191  cd ..
+ 1192  cd src/
+ 1193  ls
+ 1194  cd db_utils/
+ 1195  ls
+ 1196  cd cured/
+ 1197  ls
+ 1198  cd ..
+ 1199  ls
+ 1200  c d..
+ 1201  ls
+ 1202  cd ..
+ 1203  ls
+ 1204  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1205  ls
+ 1206  cd db_utils/
+ 1207  ls
+ 1208  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1209  clear
+ 1210  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1211  pip list
+ 1212  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1213  clear
+ 1214  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1215  python --h
+ 1216  python -h
+ 1217  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1218  mongod
+ 1219  ls /var/lib/mongodb
+ 1220  ls /var/log/mongodb/
+ 1221  ls -l /var/log/
+ 1222  mongod --config /etc/mongod.conf
+ 1223  touch /var/log/mongodb/mongod.log
+ 1224  sudo touch /var/log/mongodb/mongod.log
+ 1225  ls /var/log/mongodb/
+ 1226  mongod --config /etc/mongod.conf
+ 1227  ls -l /var/log/mongodb/
+ 1228  sudo chmod -R 0755 /var/lib/mongodb
+ 1229  sudo chmod -R 0755 /var/log/mongodb
+ 1230  ls -l /var/log/mongodb/
+ 1231  mongod --config /etc/mongod.conf
+ 1232  sudo rm /var/log/mongodb/mongod.log
+ 1233  mongod --config /etc/mongod.conf
+ 1234  whoami
+ 1235  groups
+ 1236  sudo chmod -R kostya:kostya 0755 /var/log/mongodb
+ 1237  sudo chown -R kostya:kostya /var/log/mongodb
+ 1238  mongod --config /etc/mongod.conf
+ 1239  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1240  ls /var/log/mongodb
+ 1241  car /var/log/mongodb/mongod.log 
+ 1242  cat /var/log/mongodb/mongod.log 
+ 1243  sudo chmod -R 0755 /var/lib/mongodb
+ 1244  mongod --config /etc/mongod.conf
+ 1245  cat /var/log/mongodb/mongod.log 
+ 1246  sudo mkdir -p /var/lib/mongodb/journal
+ 1247  mongod --config /etc/mongod.conf
+ 1248  cat /var/log/mongodb/mongod.log 
+ 1249  ls -ld /var/lib/mongodb
+ 1250  sudo chown -R kostya:kostya /var/lib/mongodb
+ 1251  ls -ld /var/lib/mongodb
+ 1252  sudo service mongod restart
+ 1253  sudo chown -R /var/lib/mongodb
+ 1254  mongod --config /etc/mongod.conf
+ 1255  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1256  cat /var/log/mongodb/mongod.log 
+ 1257  & mongod --config /etc/mongod.conf
+ 1258  mongod --config /etc/mongod.conf &
+ 1259  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1260  cd cured/
+ 1261  source pull_cured_from_server.sh 
+ 1262  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1263  cd ..
+ 1264  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1265  pip list
+ 1266  ketos train --force-binarization -i original.mlmodel --resize add --device cuda:0 --workers 20 train/*.png -p 0.9
+ 1267  ketos -h
+ 1268  ketos --help
+ 1269  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1270  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/cured/generate_cured_training_data.py
+ 1271  pip list
+ 1272  cd cured/
+ 1273  /home/kostya/DH/uniapp/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/cured/generate_cured_training_data.py
+ 1274  ketos train --force-binarization -i original.mlmodel --resize add --device cuda:0 --workers 20 train/*.png -p 0.9
+ 1275  pip list
+ 1276  nvcc --version
+ 1277  python -m pip install torch==1.11.0+cu115
+ 1278  python -m pip install torch==1.11.0+cu113
+ 1279  python -m pip install torch==1.10.0+cu113
+ 1280  python -m pip install torch==1.11.0+cu113
+ 1281  python -m pip install torch==1.12.0+cu113
+ 1282  python -m pip install --upgrade pip
+ 1283  python -m pip install torch==1.12.0+cu113
+ 1284  python -m pip install wheel ../../../../../torch-1.11.0+cu115-cp310-cp310-linux_x86_64.whl 
+ 1285  pip list
+ 1286  ketos train --force-binarization -i original.mlmodel --resize add --device cuda:0 --workers 20 train/*.png -p 0.9
+ 1287  lsb_release -a
+ 1288  python -m pip3 install torch -index-url https://download.pytorch.org/whl/cu118
+ 1289  python -m pip install torch -index-url https://download.pytorch.org/whl/cu118
+ 1290  python -m pip install torch --index-url https://download.pytorch.org/whl/cu118
+ 1291  python
+ 1292  python -m pip install torch
+ 1293  python -m pip install --upgrade torch
+ 1294  pip list
+ 1295  ketos train --force-binarization -i original.mlmodel --resize add --device cuda:0 --workers 20 train/*.png -p 0.9
+ 1296  \
+ 1297  pip freeze
+ 1298  conda deactivate
+ 1299  /home/kostya/.virtualenvs/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1300  cd server/src/db_utils/
+ 1301  /home/kostya/.virtualenvs/cured/bin/python /home/kostya/DH/uniapp/server/src/db_utils/generate_training_data.py
+ 1302  cd ..
+ 1303  ls
+ 1304  cd db_utils/
+ 1305  ls
+ 1306  cd cured/
+ 1307  ls
+ 1308  which python
+ 1309  source ~/DH/uniapp/cured/bin/activate
+ 1310  conda deactivate
+ 1311  ketos train --force-binarization -i original.mlmodel --resize add --device cuda:0 --workers 20 train/*.png -p 0.9
+ 1312  ls
+ 1313  source find_best.sh 
+ 1314  source backup_and_push.sh 
+ 1315  conda deactivate
+ 1316  source cured/bin/activate
+ 1317  cd server/src/db_utils/cured/
+ 1318  source backup_and_push.sh 
+ 1319  ssh -t ubuntu@13.38.104.209 -i ~/.ssh/key.pem
+ 1320  source backup_and_push.sh 
+ 1321  cd ../../../
+ 1322  cd ..
+ 1323  git status
+ 1324  git add .
+ 1325  git commit -m "trained CuReD with additional data"
+ 1326  git push
+ 1327  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2023.22.1/pythonFiles/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2023.22.1/pythonFiles/deactivate/bash/envVars.txt
+ 1328  cd ..
+ 1329  ls
+ 1330  wget https://www.qalamos.net/rsc/viewer/ID13Book_derivate_00001347/07_00858_00001.jpg
+ 1331  ls
+ 1332  wget https://www.qalamos.net/rsc/viewer/ID13Book_derivate_00001347
+ 1333  ls
+ 1334  wget https://www.qalamos.net/rsc/viewer/ID13Book_derivate_00001347/
+ 1335  wget http://resolver.staatsbibliothek-berlin.de/SBB0001BA9600000268
+ 1336  echo /bin/bash
+ 1337  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2023.22.1/pythonFiles/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2023.22.1/pythonFiles/deactivate/bash/envVars.txt
+ 1338  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.0.1/pythonFiles/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.0.1/pythonFiles/deactivate/bash/envVars.txt
+ 1339  docker compose up
+ 1340  git clone https://github.com/argmaxml/pgdl.git
+ 1341  cd pgdl/
+ 1342  docker compose up
+ 1343  docker ps
+ 1344  cd pgdl/
+ 1345  docker ps
+ 1346  docker compose up
+ 1347  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.2.1/pythonFiles/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.2.1/pythonFiles/deactivate/bash/envVars.txt
+ 1348  docker compose up
+ 1349  git status
+ 1350  docker compose up
+ 1351  git status
+ 1352  docker ps
+ 1353  docker cp a8f02ff58684: /usr/src/app/my_notebook.ipynb ~/projects/argmax/pgdl/nb/
+ 1354  docker cp a8f02ff58684:/usr/src/app/my_notebook.ipynb ~/projects/argmax/pgdl/nb/
+ 1355  docker compose up
+ 1356  docker cp a8f02ff58684:/usr/src/app/my_notebook.ipynb ~/projects/argmax/pgdl/nb/
+ 1357  git status
+ 1358  git remote -v
+ 1359  git add .
+ 1360  git commit -m "my work"
+ 1361  git remote -v
+ 1362  git remote set-url origin https://github.com/chendwend/pgdl.git
+ 1363  git remote -v
+ 1364  git push
+ 1365  /bin/python3 /home/kostya/projects/selenium/test.py
+ 1366  pip list
+ 1367  pip list/home/kostya/projects/selenium/venv/bin/python /home/kostya/projects/selenium/test.py
+ 1368  /home/kostya/projects/selenium/venv/bin/python /home/kostya/projects/selenium/test.py
+ 1369  python -m .venv .
+ 1370  virtualenv venv
+ 1371  .\venv\Scripts\activate
+ 1372  .\venv\bin\activate
+ 1373  ls
+ 1374  venv/bin/activate
+ 1375  sudo venv/bin/activate
+ 1376  source venv/bin/activate
+ 1377  conda deactivate
+ 1378  pip install selenium
+ 1379  python test.py 
+ 1380  wget https://storage.googleapis.com/chrome-for-testing-public/123.0.6312.58/linux64/chrome-linux64.zip
+ 1381  wget https://storage.googleapis.com/chrome-for-testing-public/123.0.6312.58/linux64/chromedriver-linux64.zip
+ 1382  unzip -o chromedriver-linux64.zip
+ 1383  chmod +x chromedriver
+ 1384  chmod +x chromedriver-linux64/chromedriver 
+ 1385  sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+ 1386  chromedriver --version
+ 1387  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.2.1/pythonFiles/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.2.1/pythonFiles/deactivate/bash/envVars.txt
+ 1388  docker compose up
+ 1389  docker cp a8f02ff58684:/usr/src/app/my_notebook.ipynb ~/projects/argmax/pgdl/nb/
+ 1390  git status
+ 1391  git add nb/my_notebook.ipynb 
+ 1392  git commit -m "small updates"
+ 1393  git push
+ 1394  docker cp a8f02ff58684:/usr/src/app/my_notebook.ipynb ~/projects/argmax/pgdl/nb/
+ 1395  git add nb/my_notebook.ipynb 
+ 1396  git commit -m "removed old Average sentPrice  bidFloorPrice"
+ 1397  git push
+ 1398  docker ps
+ 1399  docker ps -a
+ 1400  docker images
+ 1401  docker ps
+ 1402  docker ps -a
+ 1403  clear
+ 1404  docker ps 
+ 1405  docker ps --no-trunc
+ 1406  docker inspect pgdl-pg
+ 1407  docker log pgdl-pg
+ 1408  docker logs pgdl-pg
+ 1409  docker inspect pgdl-pg
+ 1410  docker ps 
+ 1411  docker logs pgdl-pg
+ 1412  clear
+ 1413  docker inspect
+ 1414  docker inspect pgdl-pg
+ 1415  docjer history pgdl-pg
+ 1416  docker history pgdl-pg
+ 1417  clear
+ 1418  docker inspect
+ 1419  docker inspect pgdl-pg
+ 1420  git fetch
+ 1421  git status
+ 1422  git pull
+ 1423  docker compose up
+ 1424  docker cp a8f02ff58684:/usr/src/app/my_embed_notebook.ipynb ~/projects/argmax/pgdl/nb/
+ 1425  docker ps
+ 1426  docker cp 4ab8df9b9f40:/usr/src/app/my_embed_notebook.ipynb ~/projects/argmax/pgdl/nb/
+ 1427  git status
+ 1428  git add nb/my_embed_notebook.ipynb 
+ 1429  git commit -m "embed_assignment_submission"
+ 1430  git push
+ 1431  git status
+ 1432  git add nb/my_embed_notebook.ipynb 
+ 1433  git commit -m "cosmetic changes to submission"
+ 1434  git push
+ 1435  git add nb/my_embed_notebook.ipynb 
+ 1436  git commit -m "cosmetic changes to submission 2"
+ 1437  git push
+ 1438  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.4.1/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.4.1/python_files/deactivate/bash/envVars.txt
+ 1439  cd //
+ 1440  cd ~/projects/
+ 1441  ls
+ 1442  cd CBIS-DDSM/
+ 1443  ls
+ 1444  source ~/.virtualenvs/CBIS-DDSM/bin/python
+ 1445  source ~/.virtualenvs/CBIS-DDSM/bin/
+ 1446  source ~/.virtualenvs/CBIS-DDSM/bin/activate
+ 1447  conda deactivate
+ 1448  pip install opencv-python
+ 1449  source ~/.bashrc
+ 1450  pip install tqdm
+ 1451  conda deactivate
+ 1452  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.6.0/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.6.0/python_files/deactivate/bash/envVars.txt
+ 1453  pip list
+ 1454  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.6.0/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.6.0/python_files/deactivate/bash/envVars.txt
+ 1455  /home/kostya/miniconda3/envs/reliefs_classification/bin/python /home/kostya/projects/CBIS-DDSM/main.py
+ 1456  clear
+ 1457  /home/kostya/miniconda3/envs/reliefs_classification/bin/python /home/kostya/projects/CBIS-DDSM/main.py
+ 1458  nvcc --version
+ 1459  lspci | grep VGA
+ 1460  cd ..
+ 1461  code .bashrc
+ 1462  conda deactivate
+ 1463  coda activate reliefs_classification
+ 1464  conda activate reliefs_classification
+ 1465  clear
+ 1466  /home/kostya/miniconda3/envs/medical/bin/python /home/kostya/projects/CBIS-DDSM/main.py
+ 1467  pip3 install scikit-learn
+ 1468  /home/kostya/miniconda3/envs/medical/bin/python /home/kostya/projects/CBIS-DDSM/main.py
+ 1469  lspci | grep VGA
+ 1470  lspci
+ 1471  nvidia-smi
+ 1472  conda list
+ 1473  nvcc --version
+ 1474  lspci | grep -i nvidia
+ 1475  update-pciids
+ 1476  uname -m && cat /etc/*release
+ 1477  gcc --version
+ 1478  uname -r
+ 1479  conda install pytorch torchvision pytorch-cuda=12.1 -c pytorch -c nvidia
+ 1480  conda env
+ 1481  conda list
+ 1482  which
+ 1483  workon
+ 1484  conda deactivate
+ 1485  conda update conda
+ 1486  deactivate
+ 1487  workon
+ 1488  conda env list
+ 1489  conda deactivate
+ 1490  which python
+ 1491  python --version
+ 1492  conda env list
+ 1493  conda create -n medical python=3.10
+ 1494  conda activate medical
+ 1495  conda install pytorch torchvision pytorch-cuda=12.1 -c pytorch -c nvidia
+ 1496  pip3 install torch torchvision
+ 1497  conda list
+ 1498  pip3 install numpy
+ 1499  pip3 install matplotlib
+ 1500  pip3 install seaborn
+ 1501  pip3 install hydra-core
+ 1502  pip3 install tqdm
+ 1503  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.6.0/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.6.0/python_files/deactivate/bash/envVars.txt
+ 1504  deactivate
+ 1505  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.6.0/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.6.0/python_files/deactivate/bash/envVars.txt
+ 1506  workon
+ 1507  conda env list
+ 1508  conda deactivate
+ 1509  deactivate
+ 1510  conda deactivate
+ 1511  conda activate medical
+ 1512  workon
+ 1513  conda config --set auto_activate_base false
+ 1514  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.6.0/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.6.0/python_files/deactivate/bash/envVars.txt
+ 1515  git remote add origin https://github.com/chendwend/medical.git
+ 1516  git add .
+ 1517  git commit -m "init commit"
+ 1518  git branch
+ 1519  git branch -M main
+ 1520  git branch
+ 1521  git push -u origin main
+ 1522  conda env export > environment.yml
+ 1523  git add environment.yml 
+ 1524  git commit -m "added environmemt.yml"
+ 1525  git push
+ 1526  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.6.0/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.6.0/python_files/deactivate/bash/envVars.txt
+ 1527  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.8.0/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.8.0/python_files/deactivate/bash/envVars.txt
+ 1528  ssh 
+ 1529  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.8.1/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.8.1/python_files/deactivate/bash/envVars.txt
+ 1530  pwd
+ 1531  ls
+ 1532  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.8.1/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.8.1/python_files/deactivate/bash/envVars.txt
+ 1533  openssh-client
+ 1534  ssh ssh.cyolo.io -l cyzt-qdqzhAOuQSmI8Iidoxdu4w.DjcAM0oWBwUbERIQGQQQEVcTWl8FAxMNLTobOH0OMFclBkoGFw -v 
+ 1535  git status
+ 1536  git fetch
+ 1537  ls
+ 1538  cd ..
+ 1539  cd CBIS-DDSM/
+ 1540  ls
+ 1541  git status
+ 1542  git restore src/get_data.ipynb
+ 1543  git status
+ 1544  git pull
+ 1545  git status
+ 1546  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/deactivate/bash/envVars.txt
+ 1547  /home/kostya/miniconda3/envs/medical/bin/python /home/kostya/projects/CBIS-DDSM/src/fake.py
+ 1548  clear
+ 1549  torch --nproc_per_node=1 main.py 
+ 1550  torchrun --nproc_per_node=1 main.py 
+ 1551  pwd
+ 1552  torchrun --nproc_per_node=1 main.py 
+ 1553  git add .
+ 1554  git commit -m "change model build order"
+ 1555  git push
+ 1556  torchrun --nproc_per_node=1 main.py 
+ 1557  pwd
+ 1558  scp /home/kostya/projects/CBIS-DDSM/src/get_data.py cyzt-UWLqDLiTvKQSWECGDMyrw.KS88KSUaLSYwJA8XWhAKEllKInktAy0pBSEYIn8wLiovKGokFg@ssh.cyolo.io:/home/konstantin
+ 1559  ssh ssh.cyolo.io -l cyzt-my4JSnCRRmAoN3uPT6F6Q.DQksFTxsGzEgXzBTfBAKEllKGldVODoLLyc8BG8MN1wZP3pfKQ
+ 1560  scp /home/kostya/projects/CBIS-DDSM/src/metrics.py cyzt-8Z3nNjvsTqT9ZeCFKeotQ.CxU5Qyg6LSc_DBkRfBAKEllKT3RSHCcPGgY6GHpaIwovKWUMAA@ssh.cyolo.io:/home/konstantin/
+ 1561  scp -r /home/kostya/projects/CBIS-DDSM/ cyzt-smTU0G0SDWkk3sy3HdZw.DCA6ERlsHRhHIRI_WhAKEllKBEM1J1kiXCYqPkUIShwVXGYNNQ@ssh.cyolo.io:/home/konstantin/medical/
+ 1562  scp -r /home/kostya/projects/CBIS-DDSM/ data/dataset cyzt-smTU0G0SDWkk3sy3HdZw.DCA6ERlsHRhHIRI_WhAKEllKBEM1J1kiXCYqPkUIShwVXGYNNQ@ssh.cyolo.io:/home/konstantin/medical/data
+ 1563  scp -r /home/kostya/projects/CBIS-DDSM/ data/dataset cyzt-smTU0G0SDWkk3sy3HdZw.DCA6ERlsHRhHIRI_WhAKEllKBEM1J1kiXCYqPkUIShwVXGYNNQ@ssh.cyolo.io:/home/konstantin/medical/dataset
+ 1564  scp -r /home/kostya/projects/CBIS-DDSM/data/dataset cyzt-smTU0G0SDWkk3sy3HdZw.DCA6ERlsHRhHIRI_WhAKEllKBEM1J1kiXCYqPkUIShwVXGYNNQ@ssh.cyolo.io:/home/konstantin/medical/dataset
+ 1565  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/deactivate/bash/envVars.txt
+ 1566  cd ..
+ 1567  ls
+ 1568  cd ..
+ 1569  ls
+ 1570  rm out.txt 
+ 1571  ls
+ 1572  git clone https://github.com/saoudrizwan/claude-dev.git
+ 1573  ls
+ 1574  code claude-dev/
+ 1575  npm run install:all
+ 1576  sudo apt install npm
+ 1577  sudo apt install npm --fix-missing
+ 1578  npm --version
+ 1579  sudo apt-get clean && apt-get update && apt-get upgrade
+ 1580  sudo apt-get clean && sudo apt-get update && sudo apt-get upgrade
+ 1581  sudo apt-get update
+ 1582  sudo apt-get upgrade
+ 1583  sudo apt install libssl1.0-dev nodejs-dev
+ 1584  npm run install:all
+ 1585  cd claude-dev/
+ 1586  npm run install:all
+ 1587  ls
+ 1588  clear
+ 1589  pip install wandb
+ 1590  pip freeze > requirements.txt
+ 1591  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/deactivate/bash/envVars.txt
+ 1592  conda install conda-forge::python-dotenv
+ 1593  python help
+ 1594  man python
+ 1595  ssh ssh.cyolo.io -l cyzt-kuzOE5ygRrCbYsIGy6hZ2w.DRYuGCssJyYNXx4_HwQQEVcTWkUUCCYgWQwJO1wgGzYfJmkQWQ
+ 1596  torchrun --nproc_per_node=1 main.py 
+ 1597  git add .
+ 1598  git commit -m "loss, metrics, env variables" 
+ 1599  git push
+ 1600  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/deactivate/bash/envVars.txt
+ 1601  torchrun --nproc_per_node=1 main.py 
+ 1602  git config
+ 1603  torchrun --nproc_per_node=1 main.py 
+ 1604  git add .
+ 1605  git commit -m "wandb sweep in ddp support"
+ 1606  git push
+ 1607  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/deactivate/bash/envVars.txt
+ 1608  conda env export > environment.yml
+ 1609  conda install conda-forge::tqdm
+ 1610  conda env export > environment.yml
+ 1611  git add .
+ 1612  git commit -m "env file included, environmnet updated"
+ 1613  git push
+ 1614  ssh gilb-server@6.tcp.ngrok.io -p 13657
+ 1615  ssh gilb-server@0.tcp.ngrok.io -p 15873
+ 1616  ssh ssh.cyolo.io -l cyzt-GCUBOjcZQgiqV0tNo9W8Qw.DgMECyRvGi8bUCFdfAQQEVcTWmkiJysqBhY0OEkKCDlcG2AGVg
+ 1617  ssh ssh.cyolo.io -l cyzt-WEiK64vfTIpSSME8vNAow.Cy0dKSESK1kCJzcKWhAKEllKIGsIOV9RGhM6IF4wKiIpV1gnLg
+ 1618  ssh ssh.cyolo.io -l cyzt-bfSDQXKpQfqw9lQq0JD7g.DgIcDUszPxBEIzJSShAKEllKFUgyNjg9JwU_D18UQAM9Hh4jKw
+ 1619  man tmux
+ 1620  tmux new
+ 1621  ssh gilb-server@0.tcp.ngrok.io -p 15873
+ 1622  ssh ssh.cyolo.io -l cyzt-2TfQ0iLTCu93iile8Abg.CycYQ0E2Bw0RUTcHShAKEllKRXoHI1kMICEtHBdQEAYAChYoDQ
+ 1623  tmux new
+ 1624  ls
+ 1625  ssh ssh.cyolo.io -l cyzt-2TfQ0iLTCu93iile8Abg.CycYQ0E2Bw0RUTcHShAKEllKRXoHI1kMICEtHBdQEAYAChYoDQ
+ 1626  ssh ssh.cyolo.io -l cyzt-5r5OPEaSFOEBu2BuVXzQ.DCIiPzAqXCMBPy4ffBAKEllKQlxUPTkgDSYoJmshDF0uGngxFQ
+ 1627  tmux 
+ 1628  git pull
+ 1629  git reset --hard
+ 1630  git pull
+ 1631  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/deactivate/bash/envVars.txt
+ 1632  tmux new
+ 1633  git add .
+ 1634  git commit -m "EarlyStopping, BestModel at torch_utils"
+ 1635  git push
+ 1636  git add .
+ 1637  git commit -m "early stopping fix"
+ 1638  git push
+ 1639  git add src/Trainer.py 
+ 1640  git commit -m "master prints summary fix"
+ 1641  git push
+ 1642  git add .
+ 1643  git commit -m "save model on master model only"
+ 1644  git push
+ 1645  tmux new
+ 1646  ssh man
+ 1647  man ssh
+ 1648  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.10.0-linux-x64/python_files/deactivate/bash/envVars.txt
+ 1649  tmux new
+ 1650  python
+ 1651  python main.py -h
+ 1652  python main.py -m resnet50 -t pathology -d 0
+ 1653  python
+ 1654  python main.py -m resnet50 -t pathology -d 0
+ 1655  main.py -h
+ 1656  python main.py -h
+ 1657  python main.py -m resnet50 -t pathology -d 0
+ 1658  /home/kostya/miniconda3/envs/medical/bin/python /home/kostya/projects/CBIS-DDSM/test1.py
+ 1659  ssh ssh.cyolo.io -l cyzt-k9zaD2cCRJKjJaWHrp0MCA.DS4mEDg-OSkGGUYobjIQEVcTWkVYCAghXhYtO2QoEyUNOGYbHw
+ 1660  ssh ssh.cyolo.io -l cyzt-zclICMJQRaBfhtaS6OPQ.DjYMOBQ3GgAnXzk1fBAKEllKDU0NOyooJiQ8CGwFERsNPBgmPw
+ 1661  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.12.1-linux-x64/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.12.1-linux-x64/python_files/deactivate/bash/envVars.txt
+ 1662  ssh ssh.cyolo.io -l cyzt-PeW3lWvTLqpYoPBbIKWDw.ExUdIx0PLAM9IiEhWhAKEllKJ0s2QQUyGiEiGF46Fj8uDWciOA
+ 1663  /home/kostya/miniconda3/envs/medical/bin/python /home/kostya/projects/CBIS-DDSM/misc/test.py
+ 1664  clear
+ 1665  /home/kostya/miniconda3/envs/medical/bin/python /home/kostya/projects/CBIS-DDSM/misc/test.py
+ 1666  rclone config
+ 1667  sudo apt install rclone
+ 1668  sudo apt-get update
+ 1669  sudo apt-get upgrade
+ 1670  apt --fix-broken install
+ 1671  sudo apt --fix-broken install
+ 1672  sudo apt-get upgrade
+ 1673  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.12.3-linux-x64/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.12.3-linux-x64/python_files/deactivate/bash/envVars.txt
+ 1674  ls
+ 1675  cd ~
+ 1676  ls
+ 1677  curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip
+ 1678  mkdir ~/bin
+ 1679  unzip rclone-current-linux-amd64.zip 
+ 1680  cd rclone-v1.67.0-linux-amd64/
+ 1681  mv rclone ~/bin/
+ 1682  cd ..
+ 1683  nano .bashrc 
+ 1684  source .bashrc 
+ 1685  rclone authorize "drive" "eyJzY29wZSI6ImRyaXZlIn0"
+ 1686  rclone
+ 1687  rclone config
+ 1688  ls
+ 1689  rm rclone-current-linux-amd64.zip 
+ 1690  rm -rf rclone-v1.67.0-linux-amd64/
+ 1691  ls
+ 1692  rm -rf CBIS-DDSM/
+ 1693  ls
+ 1694  rm -rf cured/
+ 1695  ls
+ 1696  rm -rf Dev/
+ 1697  ls
+ 1698  cd projects/
+ 1699  ls
+ 1700  ls medical_new/
+ 1701  cd CBIS-DDSM/
+ 1702  ls
+ 1703  cd misc/
+ 1704  ls
+ 1705  cd ..
+ 1706  rclone sync misc gdrive:Graduate_Studies/CV_Lab/
+ 1707  ls
+ 1708  ls misc/
+ 1709  rclone copy misc/ gdrive:Graduate_Studies/CV_Lab/Cyolo
+ 1710  clone sync misc gdrive:Graduate_Studies/CV_Lab/
+ 1711  /home/kostya/miniconda3/envs/medical/bin/python /home/kostya/projects/CBIS-DDSM/test1.py
+ 1712  python main.py -m resnet50 -t pathology -d 0 -w
+ 1713  python main.py -m resnet50 -t pathology -d 0
+ 1714  python main.py -m resnet50 -t pathology -d 0 -w
+ 1715  python
+ 1716  python main.py -m resnet50 -t pathology -d 0 -w
+ 1717  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.12.3-linux-x64/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.12.3-linux-x64/python_files/deactivate/bash/envVars.txt
+ 1718  ssh ssh.cyolo.io -l cyzt-4cIORHs1TV6GkmvE1R7hoA.CzJbPRkyGCRFO0ENQjIQEVcTWhoCOyY3JAZfPXhVPgQBGWtYPQ
+ 1719  python main.py -m resnet50 -t pathology -d 0 -w
+ 1720  conda activate medical
+ 1721  python main.py -m resnet50 -t pathology -d 0 -w
+ 1722  python
+ 1723  python main.py -m resnet50 -t pathology -d 0 -w
+ 1724  python main.py -m resnet50 -t pathology -d 0
+ 1725  git add .
+ 1726  git commit -m "support for num_workers test"
+ 1727  git push
+ 1728  python
+ 1729  python misc/test.py --hey 1 2 3 4
+ 1730  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.12.3-linux-x64/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.12.3-linux-x64/python_files/deactivate/bash/envVars.txt
+ 1731  ssh ssh.cyolo.io -l cyzt-uu0LC7C1SvOp99r2l1W5Lg.DBIiCktmHFMYWCFQYRQQEVcTWlsUQiUmWzZfOlgsCVZVHRwFXg
+ 1732  ssh ssh.cyolo.io -l cyzt-j5w2EdK0R4WMpMCOZ6OZrA.DVA6NwISLS4uXzk_XzIQEVcTWkRUBVsgCD5eOxo0NB8hLGEzWQ
+ 1733  git status
+ 1734  git add .
+ 1735  git commit -m "cuda_visible_devices fix"
+ 1736  git push
+ 1737  /bin/python3 /home/kostya/.vscode-server/extensions/ms-python.python-2024.12.3-linux-x64/python_files/printEnvVariablesToFile.py /home/kostya/.vscode-server/extensions/ms-python.python-2024.12.3-linux-x64/python_files/deactivate/bash/envVars.txt
+ 1738  sudo apt-get install software-properties-common
+ 1739  sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
+ 1740  lsb_release -b
+ 1741  lsb_release -d
+ 1742  sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu jammy/'
+ 1743  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 51716619E084DAB9
+ 1744  sudo apt-get update
+ 1745  sudo apt -y install r-base
+ 1746  sudo apt-get install libicu70
+ 1747  sudo apt -y install r-base
+ 1748  sudo apt install software-properties-common
+ 1749  sudo apt autoremove 
+ 1750  sudo apt install software-properties-common
+ 1751  sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/'
+ 1752  sudo add-apt-repository -r 'deb https://cloud.r-project.org/bin/linux/ubuntu jammy/'
+ 1753  sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/'
+ 1754  wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+ 1755  sudo apt update
+ 1756  sudo apt install r-base
+ 1757  sudo apt install gdebi-core
+ 1758  wget https://download1.rstudio.org/desktop/bionic/amd64/rstudio-2022.07.1-554-amd64.deb
+ 1759  sudo gdebi rstudio-2022.07.1-554-amd64.deb
+ 1760  rm rstudio-2022.07.1-554-amd64.deb
+ 1761  wget https://download1.rstudio.org/electron/jammy/amd64/rstudio-2023.12.0-369-amd64.deb
+ 1762  sudo apt install ./rstudio-2023.12.0-369-amd64.deb
+ 1763  sudo chown $USER:$USER rstudio-2023.12.0-369-amd64.deb
+ 1764  chmod 644 rstudio-2023.12.0-369-amd64.deb
+ 1765  sudo apt install ./rstudio-2023.12.0-369-amd64.deb
+ 1766  rstudio
+ 1767  export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0.0
+ 1768  rstudio
+ 1769  New-NetFirewallRule -DisplayName "WSL" -Direction Inbound -InterfaceAlias "vEthernet (WSL)" -Action Allow
+ 1770  sudo apt install x11-apps
+ 1771  xeyes
+ 1772  rstudio
+ 1773  sudo apt install dbus-x11
+ 1774  sudo service dbus start
+ 1775  rstudio
+ 1776  echo 'export DISPLAY=$(grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}'):0.0' >> ~/.bashrc
+ 1777  source ~/.bashrc
+ 1778  echo 'export DISPLAY=$(grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}'):0.0' >> ~/.bashrc
+ 1779  source ~/.bashrc
+ 1780  cat .bashrc 
+ 1781  nano .bashrc
+ 1782  bash
+ 1783  rstudio --verbose
+ 1784  ls
+ 1785  cd R
+ 1786  ;s
+ 1787  ls
+ 1788  rm x86_64-pc-linux-gnu-library/
+ 1789  rm -rf x86_64-pc-linux-gnu-library/
+ 1790  cat /etc/resolv.conf 
+ 1791  rstudio
+ 1792  dpkg -l | grep dbus
+ 1793  sudo systemctl start dbus
+ 1794  sudo service dbus start
+ 1795  sudo systemctl enable dbus
+ 1796  sudo service enable dbus
+ 1797  ls -l /run/dbus/system_bus_socket
+ 1798  ls -l /etc/rc2.d/ | grep dbus
+ 1799  bash
+ 1800  nano .bashrc
+ 1801  bash
+ 1802  nano .bashrc
+ 1803  bash
+ 1804  cat /etc/resolv.conf
+ 1805  bash
+ 1806  code .bashrc
+ 1807  bash
+ 1808  xeyes 
+ 1809  xclock 
+ 1810  source .bashrc 
+ 1811  xclock 
+ 1812  source .bashrc 
+ 1813  xclock 
+ 1814  source .bashrc 
+ 1815  xclock 
+ 1816  source .bashrc 
+ 1817  xclock 
+ 1818  source .bashrc 
+ 1819  xclock 
+ 1820  hostname -I | awk '{print $1}'
+ 1821  source .bashrc 
+ 1822  xclock 
+ 1823  source .bashrc 
+ 1824  xclock 
+ 1825  xeyes
+ 1826  rstudio
+ 1827  service dbus status
+ 1828  rstudio
+ 1829  bash
+ 1830  rstudio
+ 1831  bash
+ 1832  rstudio
+ 1833  bash
+ 1834  xeyes
+ 1835  bash
+ 1836  xeyes
+ 1837  xclock
+ 1838  sudo apt update
+ 1839  sudo apt upgrade
+ 1840  sudo apt install x11-apps
+ 1841  xeyes
+ 1842  echo $DISPLAY
+ 1843  export DISPLAY=$(grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}'):0
+ 1844  echo $DISPLAY
+ 1845  cat /etc/resolv.conf
+ 1846  ip route | grep default | awk '{print $3}'
+ 1847  sudo tee /etc/resolv.conf > /dev/null << EOL
+ 1848  nameserver 172.25.208.1
+ 1849  EOL
+ 1850  nano /etc/wsl.conf 
+ 1851  ls -al /etc/
+ 1852  nano /etc/resolv.conf 
+ 1853  bash
+ 1854  xeyes
+ 1855  bash
+ 1856  xeyes
+ 1857  bash
+ 1858  xeyes
+ 1859  bash
+ 1860  telnet $(hostname -I | awk '{print $1}') 6000
+ 1861  source ~/.bashrc
+ 1862  telnet $(hostname -I | awk '{print $1}') 6000
+ 1863  xeyes
+ 1864  bash
+ 1865  xeyes
+ 1866  echo $DISPLAY
+ 1867  ipconfig.exe | grep -A 15 'Ethernet adapter WSL' | grep 'IPv4 Address' | awk '{print $NF}'
+ 1868  hostname -I | awk '{print $1}'
+ 1869  echo 'export DISPLAY=$(hostname -I | awk "{print $1}"):0.0'
+ 1870  bash
+ 1871  xeyes
+ 1872  echo $DISPLAY
+ 1873  bash
+ 1874  xeyes 
+ 1875  telnet $(hostname -I | awk '{print $1}') 6000
+ 1876  bash
+ 1877  rstudio &
+ 1878  rstudio 
+ 1879  rstudio &
+ 1880  ssh ssh.cyolo.io -l cyzt-2esqXIeQH6cwSZEyUhjpw.F1IODSEFKxghARwVWhAKEllKRUsSAzEsCSQmX00UKjUpFnsBBQ
+ 1881  history > hist.txt

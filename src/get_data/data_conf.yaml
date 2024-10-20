@@ -1,0 +1,19 @@
+rot_angles: [90, 180, 270]
+tileGridSize: [8, 8]
+clip_limit_values: [2,10]
+
+birads_val: [0, 2, 3, 4, 5]
+mass_shape_val: ['OVAL', 'IRREGULAR', 'LOBULATED', 'ROUND']
+
+
+
+seed: 42
+
+
+test_size: 0.1 
+val_size: 0.125
+
+mass_train: https://wiki.cancerimagingarchive.net/download/attachments/22516629/mass_case_description_train_set.csv?version=1&modificationDate=1506796355038&api=v2
+calc_train: https://wiki.cancerimagingarchive.net/download/attachments/22516629/calc_case_description_train_set.csv?version=1&modificationDate=1506796349666&api=v2
+mass_test: https://wiki.cancerimagingarchive.net/download/attachments/22516629/mass_case_description_test_set.csv?version=1&modificationDate=1506796343175&api=v2
+calc_test: https://wiki.cancerimagingarchive.net/download/attachments/22516629/calc_case_description_test_set.csv?version=1&modificationDate=1506796343686&api=v2

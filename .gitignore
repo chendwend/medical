@@ -7,7 +7,9 @@ data/*
 best_models/*
 wandb/*
 
-!data/masked_cropped/
+# !data/masked_cropped/
 
 !data/df.csv
 !data/df_meta.csv
+
+*.png
