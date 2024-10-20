@@ -55,7 +55,7 @@ class_names:
   assessment: ["0", "3", "4", "5"]
   pathology: ["MALIGNANT", "BENIGN"]
   mass_shape: ["OVAL", "LOBULATED", "IRREGULAR", "ROUND"]
-
+  breast_density: ["1", "2", "3", "4"]
 
 seed: 42
 

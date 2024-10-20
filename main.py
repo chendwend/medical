@@ -67,20 +67,16 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-m","--model" , help="model type",  choices=["resnet50", "resnet101", "resnet152"])
     parser.add_argument("-t", "--task", help="type of task", choices=["pathology", "birads", "mass_shape"])
-    parser.add_argument("-d", "--devices", nargs="+", type=str, help="list of selected devices")
+    parser.add_argument("-d", "--devices", nargs="+", type=str, help="list of selected devices", default="all")
     parser.add_argument("-w", "--workers", help="test num_workes", action="store_true")
 
     args = parser.parse_args()
 
-    try:
-        device_list = args.devices
-    except KeyError:
+    if args.devices == "all":
         from torch.cuda import device_count
-        device_list = list(range(device_count))
+        args.devices = [x for x in range(device_count())]
 
-    args.devices = ",".join(device_list)
-    args.num_devices = len(device_list)
-
+    args.num_devices = len(args.devices)
     
     return args
 

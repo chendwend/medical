@@ -13,3 +13,4 @@ wandb/*
 !data/df_meta.csv
 
 *.png
+conf/sweep_config.yaml
