@@ -2,8 +2,11 @@ rot_angles: [90, 180, 270]
 tileGridSize: [8, 8]
 clip_limit_values: [2,10]
 
-birads_val: [0, 2, 3, 4, 5]
-mass_shape_val: ['OVAL', 'IRREGULAR', 'LOBULATED', 'ROUND']
+# per task values
+assessment: ["0", "3", "4", "5"]
+pathology: ["MALIGNANT", "BENIGN"]
+mass_shape: ["OVAL", "LOBULATED", "IRREGULAR", "ROUND"]
+breast_density: ["1", "2", "3", "4"]
 
 
 

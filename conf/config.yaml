@@ -57,6 +57,8 @@ class_names:
   mass_shape: ["OVAL", "LOBULATED", "IRREGULAR", "ROUND"]
   breast_density: ["1", "2", "3", "4"]
 
+report_columns:  ["Class", "Precision", "Recall", "F1-score", "Support"]
+
 seed: 42
 
 # DDP settings

@@ -25,8 +25,8 @@ def calc_conf_per_class(class_label, predicted, actual):
 
     return tp, fp, fn
 
-
-def calc_f1(tp, fp, fn, epsilon=1e-7):
+ 
+def calc_f1(tp, fp, fn, epsilon=1e-7) -> np.array:
     precision = calc_precision(tp, fp)
     recall = calc_recall(tp, fn)
     return 2 * precision * recall / (precision + recall + epsilon)

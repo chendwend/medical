@@ -65,7 +65,7 @@ def run_training(gpu_devices:str, gpu_device_count:int, task:str, model:str, wor
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-m","--model" , help="model type",  choices=["resnet50", "resnet101", "resnet152"])
+    parser.add_argument("-m","--model" , help="model type",  choices=["resnet50", "resnet101", "resnet152", "resnetv2_50x1_bit"])
     parser.add_argument("-t", "--task", help="type of task", choices=["pathology", "birads", "mass_shape"])
     parser.add_argument("-d", "--devices", nargs="+", type=str, help="list of selected devices", default="all")
     parser.add_argument("-w", "--workers", help="test num_workes", action="store_true")

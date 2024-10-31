@@ -133,11 +133,7 @@ def main():
 
     for task in ["assessment", "pathology", "mass_shape", "breast_density"]:
         print(f"Generating training data for {task} task...")
-        if task == "mass_shape":     
-            df = df_orig.query("mass_shape in @cfg.mass_shape_val")
-        elif task == "assessment":
-            df = df_orig.query("assessment in @cfg.birads_val")
-        
+        df = df_orig.query(f"{task} in @cfg.{task}")
         train_df, val_df, test_df = split_df(task, df, cfg.test_size, cfg.val_size, cfg.seed)
         clean_directory(augment_dir, notify=False)
         augment(train_df, src_dir, augment_dir, cfg.rot_angles, cfg.clip_limit_values, cfg.tileGridSize)

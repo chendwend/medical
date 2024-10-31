@@ -15,4 +15,4 @@ parameters:
   label_smoothing:
     values:  [0.25, 0.35]
   fc_layer: 
-    values: [512, 1024]
+    values: [1024]

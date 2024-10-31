@@ -5,11 +5,14 @@ from pathlib import Path
 import numpy as np
 import torch
 import torch.distributed as dist
+from sklearn.metrics import classification_report
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from metrics import calc_accuracy, calc_conf_per_class, calc_f1
+import wandb
+from metrics import (calc_accuracy, calc_conf_per_class, calc_f1,
+                     calc_precision, calc_recall)
 from utils import BestModel, EarlyStopping, time_it
 
 # from src.plot import plot_results
@@ -192,6 +195,8 @@ class Trainer():
             global_epoch_loss = 100 * epoch_loss.item() / self.world_size
             accuracy = calc_accuracy(epoch_correct.item(), total_samples.item())
             f1 = calc_f1(tp, fp, fn)
+            recall = calc_recall(tp, fn)
+            precision = calc_precision(tp, fp)
             avg_f1 = 100 * f1.mean().item()
         else:
             global_epoch_loss, accuracy, avg_f1 = None, None, None
@@ -221,7 +226,6 @@ class Trainer():
         
         if self.master_process:
             if not(self.testing):
-                import wandb
                 
                 wandb.log(
                     {
@@ -243,7 +247,7 @@ class Trainer():
             self.scheduler.step(val_loss)
             new_lr = self.scheduler.get_last_lr()[0]
             if new_lr != cur_lr:
-                print(f"\nlr updated -> {new_lr}.\n")
+                print(f"\nlr updated ---------------> {new_lr}.\n")
 
             f1 = {"train": train_avg_f1,
                 "val": val_avg_f1}
@@ -254,7 +258,13 @@ class Trainer():
             loss = {"train": train_loss,
                     "val": val_loss}
 
-            return f1, accuracy, loss
+            class_report = classification_report(
+                self._val_true_labels,
+                self._val_predicted_labels, 
+                target_names=self.class_names).splitlines()
+
+
+            return f1, accuracy, class_report, loss
         return None, None, None
     
     def _set_optimizer_scheduler(self) -> None:
@@ -276,7 +286,7 @@ class Trainer():
         # max_epochs = self.hp_dict["epochs"]
 
         for epoch in tqdm(range(1, max_epochs+1), total=max_epochs,  disable=(not(self.master_process)), colour='green'):
-            (f1, accuracy, loss), exec_time = self._run_epoch(epoch)
+            (f1, accuracy, class_report, loss), exec_time = self._run_epoch(epoch)
             if self.master_process and not self.testing:
                 self.stop = self.stopper(accuracy["val"], epoch)
                 self._is_best = self._best(accuracy["val"], f1["val"], epoch, self.model)
@@ -300,6 +310,16 @@ class Trainer():
                 break # must break all DDP ranks
                 
         if self.master_process:
+
+            report_table = []
+            for line in self._best.class_report[2:(len(self.class_names)+2)]:
+                report_table.append(line.split())
+            
+            report_columns = ["Class", "Precision", "Recall", "F1-score", "Support"]
+            wandb.log({
+                    "Classification Report": wandb.Table(data=report_table, columns=report_columns)
+                })
+
             summary = ", ".join(
                 [
                     f"best val accuray {self._best.accuracy:.2f}", 

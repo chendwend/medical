@@ -41,11 +41,12 @@ class CustomResNet(nn.Module):
 
     def _freeze_layers(self, freeze_blocks):
         """Freeze the first N blocks, except for BatchNorm layers."""
-        
-        for block_count, (name, child) in enumerate(self.model.named_children()):
-            if block_count < freeze_blocks:
-                for param in child.parameters():
-                    param.required_grad = False
+        for param in self.resnet.parameters():
+                param.requires_grad = False
+        # for block_count, (name, child) in enumerate(self.model.named_children()):
+        #     if block_count < freeze_blocks:
+        #         for param in child.parameters():
+        #             param.requires_grad = False
 
     def _unfreeze_batchnorm_layers(self):
         for module in self.model.modules():

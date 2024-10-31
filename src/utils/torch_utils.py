@@ -28,12 +28,13 @@ class BestModel:
         self.epoch = 0
         self.f1 = 0.0
 
-    def __call__(self, cur_accuracy, cur_f1, epoch, model) -> bool:
+    def __call__(self, cur_accuracy, cur_f1, class_report, epoch, model) -> bool:
         if cur_accuracy > self.accuracy:
             self.accuracy = cur_accuracy
             self.model = model
             self.f1 = cur_f1
             self.epoch = epoch
+            self.class_report = class_report
             print("\n-------new best:-------\n")
             return True
         return False
