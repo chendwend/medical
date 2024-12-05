@@ -13,14 +13,13 @@ gpu_device_count: 4
 workers: False
 num_workers: 4
 
-
-
 folders:
   data: ./data/dataset
   outputs: ./outputs
   assessment: ${folders.data}/assessment
   mass_shape: ${folders.data}/mass_shape
   pathology: ${folders.data}/pathology
+  breast_density: ${folders.data}/breast_density
   plots_dir: ${folders.outputs}/graphs
   cur_plot: ${folders.plots_dir}
   loss: ${folders.cur_plot}/loss_function.png

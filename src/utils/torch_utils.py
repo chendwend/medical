@@ -1,8 +1,6 @@
-import torch
-
 
 class EarlyStopping:
-    def __init__(self, patience: int = 100):
+    def __init__(self, patience: int = 10):
         self.patience = patience
         self.best_epoch = 0
         self.best_score = 0.0
@@ -27,6 +25,7 @@ class BestModel:
         self.model = None
         self.epoch = 0
         self.f1 = 0.0
+        self.class_report = None
 
     def __call__(self, cur_accuracy, cur_f1, class_report, epoch, model) -> bool:
         if cur_accuracy > self.accuracy:

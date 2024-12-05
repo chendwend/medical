@@ -1,4 +1,3 @@
-# import matplotlib
 from pathlib import Path
 
 import matplotlib
@@ -7,7 +6,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.metrics import create_report
+from metrics.metrics_calc_func import create_report
 
 # import seaborn as sns
 

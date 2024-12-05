@@ -28,17 +28,17 @@ def prep_dirs(__dir__):
 
     return masked_data_dir, augmented_dir, dataset_dir
 
-def augment(df, src_dir, augment_dir, rot_angles, clip_limit_values, tileGridSize):
+def augment(df, src_dir, augment_dir, rot_angles, clip_limit_values, tileGridSize, augment = 0):
     print("Augmenting training data...")
 
     for row in tqdm(df.iterrows(), total=len(df), desc="augment progress"):
         src_img = src_dir/ (row[1]["image_filename"] + ".png")
         dest_img = augment_dir / (row[1]["image_filename"] + ".png")
         shutil.copy2(src_img, dest_img)
-
-        with Image.open(dest_img) as img:
-            rotation_augment(img, rot_angles, dest_img)
-            clip_augment(img, clip_limit_values, tileGridSize, dest_img)
+        if augment:
+            with Image.open(dest_img) as img:
+                rotation_augment(img, rot_angles, dest_img)
+                clip_augment(img, clip_limit_values, tileGridSize, dest_img)
   
 def rotation_augment(img, rot_angles, img_path):  
     for rot_angle in rot_angles:
@@ -63,8 +63,8 @@ def split_df(task, df, test_size, val_size , seed):
 
     print(f"splitting training data for {task} task...")
 
-    patient_groups = df.groupby('patient_id')['pathology'].agg(lambda x: x.mode()[0]).reset_index()
-    patient_groups = patient_groups.rename(columns={'pathology': 'stratify_label'})
+    patient_groups = df.groupby('patient_id')[task].agg(lambda x: x.mode()[0]).reset_index()
+    patient_groups = patient_groups.rename(columns={task: 'stratify_label'})
 
     train_val_ids, test_ids = train_test_split(
         patient_groups['patient_id'],
@@ -85,7 +85,7 @@ def split_df(task, df, test_size, val_size , seed):
 
     return train_df, val_df, test_df
 
-def generate_dataset_according_to_task(task, train_df, val_df, test_df, src_dir, dataset_dir, augment_dir, rot_angles, clip_limit_values):
+def generate_dataset_according_to_task(task, train_df, val_df, test_df, src_dir, dataset_dir, augment_dir, rot_angles, clip_limit_values, augment = 0):
 
     for df_type, split in zip([val_df, test_df], ['val', 'test']):
     
@@ -105,16 +105,17 @@ def generate_dataset_according_to_task(task, train_df, val_df, test_df, src_dir,
         verify_dir(dest_dir, notify=False)
         dest_file = dest_dir/ src_file.name
         shutil.copy2(src_file, dest_file)
-        for rot_angle in rot_angles:
-            filename = row[1]["image_filename"] + f"_{rot_angle}" + ".png"
-            src_file = augment_dir/filename
-            dest_file = dest_dir/ src_file.name
-            shutil.copy2(src_file, dest_file)
-        for clip_val in clip_limit_values:
-            filename = row[1]["image_filename"] + f"_clahe{clip_val}" + ".png"
-            src_file = augment_dir/filename
-            dest_file = dest_dir/ src_file.name
-            shutil.copy2(src_file, dest_file)
+        if augment:
+            for rot_angle in rot_angles:
+                filename = row[1]["image_filename"] + f"_{rot_angle}" + ".png"
+                src_file = augment_dir/filename
+                dest_file = dest_dir/ src_file.name
+                shutil.copy2(src_file, dest_file)
+            for clip_val in clip_limit_values:
+                filename = row[1]["image_filename"] + f"_clahe{clip_val}" + ".png"
+                src_file = augment_dir/filename
+                dest_file = dest_dir/ src_file.name
+                shutil.copy2(src_file, dest_file)
 
 def main():
     with hydra.initialize(version_base="1.3", config_path=""):
@@ -136,9 +137,9 @@ def main():
         df = df_orig.query(f"{task} in @cfg.{task}")
         train_df, val_df, test_df = split_df(task, df, cfg.test_size, cfg.val_size, cfg.seed)
         clean_directory(augment_dir, notify=False)
-        augment(train_df, src_dir, augment_dir, cfg.rot_angles, cfg.clip_limit_values, cfg.tileGridSize)
+        augment(train_df, src_dir, augment_dir, cfg.rot_angles, cfg.clip_limit_values, cfg.tileGridSize, augment=0)
         generate_dataset_according_to_task(task, train_df, val_df, test_df, src_dir, dataset_dir, augment_dir, 
-                                           cfg.rot_angles, cfg.clip_limit_values)
+                                           cfg.rot_angles, cfg.clip_limit_values, augment=0)
 
     print("Finished generating training data.")
 

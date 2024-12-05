@@ -25,7 +25,6 @@ def remove_dir(dir_path) -> None:
         # Delete the directory, even if it is not empty
         shutil.rmtree(dirpath)
 
-
 def clean_directory(*dirs, notify=True):
     """
     Recursively delete all files and subdirectories in directory or directories.
@@ -55,7 +54,6 @@ def time_it(func):
         return result, run_time
     return wrapper
 
-
 def verify_dir(*dirs, notify=True):
     for directory in dirs:
         directory = Path(directory)
@@ -63,3 +61,17 @@ def verify_dir(*dirs, notify=True):
             directory.mkdir(exist_ok=True, parents=True)
             if notify:
                 print(f"{str(directory)} was created.")
+
+def seed_everything(base_seed:int, rank:int):
+    import random
+
+    import numpy as np
+    import torch
+
+
+    seed = base_seed + rank
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)

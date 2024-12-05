@@ -5,14 +5,14 @@ metric:
   target: 93
 parameters: 
   epochs:
-    values: [150]
+    values: [20]
   lr: 
-    values: [3.5e-3, 4.5e-3, 5.5e-3]
+    values: [5.5e-3]
   weight_decay: 
     values: [1e-3]
   batch_size: 
-    values: [32]
+    values: [16]
   label_smoothing:
-    values:  [0.25, 0.35]
+    values:  [0]
   fc_layer: 
     values: [1024]

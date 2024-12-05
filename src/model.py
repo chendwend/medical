@@ -8,8 +8,6 @@ from torchvision.models import (ResNet50_Weights, ResNet101_Weights,
 class CustomResNet(nn.Module):
     def __init__(self, num_classes, model_name='resnet50', fc_layer=512, dropout_rate=0.5, freeze_blocks=4):
         super(CustomResNet, self).__init__()
-        # if model_name == "resnet50":
-            # self.model = timm.create_model('resnet50.a1_in1k', pretrained=True)
         if model_name == "resnet50":
             self.model = resnet50(weights=ResNet50_Weights.DEFAULT)
         elif model_name == "resnet101":
@@ -21,27 +19,37 @@ class CustomResNet(nn.Module):
         else:
             raise ValueError("Uknown model name.")
         
-        # adapt first layer for grayscale images
-        # self.model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self._freeze_layers(freeze_blocks)
         self._unfreeze_batchnorm_layers()
 
-        num_ftrs = self.model.fc.in_features
-        self.model.fc = nn.Sequential(
+        if model_name in ["resnetv2_50x1_bit", "resnetv2_101x1_bit", "resnetv2_152x2_bit"]:
+            num_ftrs = self.model.head.fc.in_features
+            self.model.head.fc = nn.Sequential(
             nn.Linear(num_ftrs, fc_layer),
             nn.ReLU(),
             nn.Dropout(dropout_rate),
             nn.Linear(fc_layer, num_classes),
             nn.Softmax(dim=1)
             )
-        
-        for param in self.model.fc.parameters():
-            param.requires_grad = True
+            for param in self.model.head.fc.parameters():
+                param.requires_grad = True
+
+        else:
+            num_ftrs = self.model.fc.in_features
+            self.model.fc = nn.Sequential(
+            nn.Linear(num_ftrs, fc_layer),
+            nn.ReLU(),
+            nn.Dropout(dropout_rate),
+            nn.Linear(fc_layer, num_classes),
+            nn.Softmax(dim=1)
+            )
+            for param in self.model.fc.parameters():
+                param.requires_grad = True
 
 
     def _freeze_layers(self, freeze_blocks):
         """Freeze the first N blocks, except for BatchNorm layers."""
-        for param in self.resnet.parameters():
+        for param in self.model.parameters():
                 param.requires_grad = False
         # for block_count, (name, child) in enumerate(self.model.named_children()):
         #     if block_count < freeze_blocks:
