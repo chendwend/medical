@@ -1,5 +1,4 @@
 from datetime import datetime
-from os import environ
 from pathlib import Path
 from typing import Tuple
 
@@ -30,24 +29,28 @@ class Trainer():
         patience: int,
         world_size: int,
         master_process: bool,
+        device: int,
         testing: bool,
+        ddp_run_ind: bool
     ) -> None:
-        self.rank = int(environ["LOCAL_RANK"])
+               
         self.model = model
         self.train_data = train_data
         self.validation_data = val_data
-        self.loss_func = loss_func
-        self.epochs_run = 0
-        self.hp_dict = hp_dict
-        self.stopper, self.stop = torch_utils.EarlyStopping(patience), False
+        self.loss_func = loss_func  
+        self.hp_dict = hp_dict      
         self.world_size = world_size
         self.master_process = master_process
         self.testing = testing
-        self._best, self._is_best = torch_utils.BestModel(), True
         self.task = task
-        self.class_names = class_labels
-        self.num_classes = len(class_labels)
-        self._device = torch.device(f'cuda:{self.rank}')
+        self.class_names = class_labels    
+        self.device = device
+        self.ddp_run_ind = ddp_run_ind
+
+        self._best, self._is_best = torch_utils.BestModel(), True
+        self._stopper, self._stop = torch_utils.EarlyStopping(patience), False
+        self._num_classes = len(class_labels)
+        self._epochs_run = 0
              
         # self.snapshot_path = Path(snapshot_path)
         # if self.snapshot_path.exists():
@@ -55,24 +58,22 @@ class Trainer():
         #     self._load_snaphot(self.snapshot_path)
     
     def _load_snaphot(self, snapshot_path: Path) -> None:
-        loc = f"cuda:{self.rank}"
-        snapshot = torch.load(snapshot_path, map_location=loc)
+        snapshot = torch.load(snapshot_path, map_location=self.device)
         self.model.load_state_dict(snapshot["MODEL_STATE"])
-        self.epochs_run = snapshot["EPOCHS_RUN"]
-        print(f"Resuming training from snapshot at Epoch {self.epochs_run}")
+        self._epochs_run = snapshot["EPOCHS_RUN"]
+        print(f"Resuming training from snapshot at Epoch {self._epochs_run}")
     
     def _train_loop(self) -> Metrics:
         total_samples, accumulated_correct, accumulated_loss = 0, 0, 0
         global_epoch_loss = 0
 
-        tp = torch.zeros(self.num_classes, device=self._device)
-        fp = torch.zeros(self.num_classes, device=self._device)
-        fn = torch.zeros(self.num_classes, device=self._device)
+        tp = torch.zeros(self._num_classes, device=self.device)
+        fp = torch.zeros(self._num_classes, device=self.device)
+        fn = torch.zeros(self._num_classes, device=self.device)
 
         self.model.train()
-
         for inputs, targets in self.train_data:
-            inputs, targets = inputs.to(self._device, non_blocking=True), targets.to(self._device, non_blocking=True)    
+            inputs, targets = inputs.to(self.device, non_blocking=True), targets.to(self.device, non_blocking=True)    
             predicted = self.model(inputs)
             loss = self.loss_func(predicted, targets)
             loss.backward()
@@ -85,24 +86,25 @@ class Trainer():
             total_samples += targets.size(0)
             accumulated_correct += (predicted == targets).sum().item()
 
-            targets_one_hot = torch.nn.functional.one_hot(targets, num_classes=self.num_classes)
-            predicted_one_hot = torch.nn.functional.one_hot(predicted, num_classes=self.num_classes)
+            targets_one_hot = torch.nn.functional.one_hot(targets, num_classes=self._num_classes)
+            predicted_one_hot = torch.nn.functional.one_hot(predicted, num_classes=self._num_classes)
 
             # tensor arrays of num_classes size, each entry is an array of sum on all samples
             tp += (predicted_one_hot & targets_one_hot).sum(dim=0) 
             fp += (predicted_one_hot & ~targets_one_hot).sum(dim=0) 
             fn += (~predicted_one_hot & targets_one_hot).sum(dim=0) 
             
-        total_accumulated_correct = torch.tensor([accumulated_correct], device=self._device)
-        total_accumulated_loss = torch.tensor([accumulated_loss], device=self._device)
-        total_total_samples = torch.tensor([total_samples], device=self._device)
+        total_accumulated_correct = torch.tensor([accumulated_correct], device=self.device)
+        total_accumulated_loss = torch.tensor([accumulated_loss], device=self.device)
+        total_total_samples = torch.tensor([total_samples], device=self.device)
         # Reduce results across all processes
-        dist.reduce(total_accumulated_loss, dst=0, op=dist.ReduceOp.SUM)
-        dist.reduce(total_total_samples, dst=0, op=dist.ReduceOp.SUM)
-        dist.reduce(total_accumulated_correct, dst=0, op=dist.ReduceOp.SUM)
-        dist.reduce(tp, dst=0, op=dist.ReduceOp.SUM)
-        dist.reduce(fp, dst=0, op=dist.ReduceOp.SUM)
-        dist.reduce(fn, dst=0, op=dist.ReduceOp.SUM)
+        if self.ddp_run_ind:
+            dist.reduce(total_accumulated_loss, dst=0, op=dist.ReduceOp.SUM)
+            dist.reduce(total_total_samples, dst=0, op=dist.ReduceOp.SUM)
+            dist.reduce(total_accumulated_correct, dst=0, op=dist.ReduceOp.SUM)
+            dist.reduce(tp, dst=0, op=dist.ReduceOp.SUM)
+            dist.reduce(fp, dst=0, op=dist.ReduceOp.SUM)
+            dist.reduce(fn, dst=0, op=dist.ReduceOp.SUM)
 
         if self.master_process:
             global_epoch_loss = total_accumulated_loss.item() / total_total_samples.item()
@@ -112,7 +114,7 @@ class Trainer():
             f1 = metrics_calc_func.f1(recall, precision)
             avg_f1 = 100 * f1.mean().item()
         else:
-            global_epoch_loss, accuracy, avg_f1 = None, None, None
+            global_epoch_loss, accuracy, avg_f1, recall, precision = (None,)*5
 
 
         metrics = {
@@ -129,9 +131,9 @@ class Trainer():
         total_samples, accumulated_correct, accumulated_loss = 0, 0, 0
         global_epoch_loss = 0
 
-        tp = torch.zeros(self.num_classes, device=self._device)
-        fp = torch.zeros(self.num_classes, device=self._device)
-        fn = torch.zeros(self.num_classes, device=self._device)
+        tp = torch.zeros(self._num_classes, device=self.device)
+        fp = torch.zeros(self._num_classes, device=self.device)
+        fn = torch.zeros(self._num_classes, device=self.device)
 
         true_labels = []
         predicted_labels = []
@@ -139,7 +141,7 @@ class Trainer():
         with torch.no_grad():
             self.model.eval()
             for (inputs, targets) in self.validation_data:
-                inputs, targets = inputs.to(self._device, non_blocking=True), targets.to(self._device, non_blocking=True)
+                inputs, targets = inputs.to(self.device, non_blocking=True), targets.to(self.device, non_blocking=True)
                 predicted = self.model(inputs)
                 loss = self.loss_func(predicted, targets)
                 
@@ -152,18 +154,20 @@ class Trainer():
                 true_labels.extend(targets.cpu().numpy()) 
                 predicted_labels.extend(predicted.cpu().numpy())
 
-                targets_one_hot = torch.nn.functional.one_hot(targets, num_classes=self.num_classes)
-                predicted_one_hot = torch.nn.functional.one_hot(predicted, num_classes=self.num_classes)
+                targets_one_hot = torch.nn.functional.one_hot(targets, num_classes=self._num_classes)
+                predicted_one_hot = torch.nn.functional.one_hot(predicted, num_classes=self._num_classes)
 
                 # tensor arrays of num_classes size, each entry is an array of sum on all samples
                 tp += (predicted_one_hot & targets_one_hot).sum(dim=0) 
                 fp += (predicted_one_hot & ~targets_one_hot).sum(dim=0) 
                 fn += (~predicted_one_hot & targets_one_hot).sum(dim=0) 
-        
-            total_accumulated_correct = torch.tensor([accumulated_correct], device=self._device) #TODO: reduce uneccesary GPU <-> CPU traffic
-            total_accumulated_loss = torch.tensor([accumulated_loss], device=self._device)
-            total_total_samples = torch.tensor([total_samples], device=self._device)
-            # Reduce results across all processes
+                
+            total_accumulated_correct = torch.tensor([accumulated_correct], device=self.device) #TODO: reduce uneccesary GPU <-> CPU traffic
+            total_accumulated_loss = torch.tensor([accumulated_loss], device=self.device)
+            total_total_samples = torch.tensor([total_samples], device=self.device)
+
+        # Reduce results across all processes
+        if self.ddp_run_ind:
             dist.reduce(total_accumulated_loss, dst=0, op=dist.ReduceOp.SUM)
             dist.reduce(total_total_samples, dst=0, op=dist.ReduceOp.SUM)
             dist.reduce(total_accumulated_correct, dst=0, op=dist.ReduceOp.SUM)
@@ -171,39 +175,44 @@ class Trainer():
             dist.reduce(fp, dst=0, op=dist.ReduceOp.SUM)
             dist.reduce(fn, dst=0, op=dist.ReduceOp.SUM)
 
-            if self.master_process:
-                global_epoch_loss = total_accumulated_loss.item() / total_total_samples.item()
-                accuracy = metrics_calc_func.accuracy(total_accumulated_correct.item(), total_total_samples.item())
-                recall = metrics_calc_func.recall(tp.cpu(), fn.cpu())
-                precision = metrics_calc_func.precision(tp.cpu(), fp.cpu())
-                f1 = metrics_calc_func.f1(recall, precision)
-                avg_f1 = 100 * f1.mean().item()
+        if self.master_process:
+            global_epoch_loss = total_accumulated_loss.item() / total_total_samples.item()
+            accuracy = metrics_calc_func.accuracy(total_accumulated_correct.item(), total_total_samples.item())
+            recall = metrics_calc_func.recall(tp.cpu(), fn.cpu())
+            precision = metrics_calc_func.precision(tp.cpu(), fp.cpu())
+            f1 = metrics_calc_func.f1(recall, precision)
+            avg_f1 = 100 * f1.mean().item()
 
-                # Gather true_labels and predicted_labels from all GPUs
-                gathered_true_labels = [None for _ in range(dist.get_world_size())]
-                gathered_predicted_labels = [None for _ in range(dist.get_world_size())]
-            else:
-                global_epoch_loss, accuracy, avg_f1 = None, None, None
-                gathered_true_labels = None
-                gathered_predicted_labels = None
+            # Gather true_labels and predicted_labels from all GPUs
+            # gathered_true_labels = [None for _ in range(dist.get_world_size())]
+            # gathered_predicted_labels = [None for _ in range(dist.get_world_size())]
 
-        dist.gather_object(true_labels, gathered_true_labels, dst=0)
-        dist.gather_object(predicted_labels, gathered_predicted_labels, dst=0)
+        else:
+            global_epoch_loss, accuracy, avg_f1, precision, recall = (None,)*5
+            # gathered_true_labels = None
+            # gathered_predicted_labels = None
+
+        combined_true_labels = ddp_utils.gather_obj(self.ddp_run_ind, true_labels, self.master_process, self.device)
+        combined_predicted_labels = ddp_utils.gather_obj(self.ddp_run_ind, true_labels, self.master_process, self.device)
+
+        # if self.ddp_run_ind:
+        #     dist.gather_object(true_labels, gathered_true_labels, dst=0)
+        #     dist.gather_object(predicted_labels, gathered_predicted_labels, dst=0)
 
         if self.master_process:
-            combined_true_labels = []
-            combined_predicted_labels = []
-            for sublist in gathered_true_labels:
-                combined_true_labels.extend(sublist)
-            for sublist in gathered_predicted_labels:
-                combined_predicted_labels.extend(sublist)
+        #     combined_true_labels = []
+        #     combined_predicted_labels = []
+        #     for sublist in gathered_true_labels:
+        #         combined_true_labels.extend(sublist)
+        #     for sublist in gathered_predicted_labels:
+        #         combined_predicted_labels.extend(sublist)
 
             class_report = classification_report(
                 combined_true_labels,
                 combined_predicted_labels, 
                 target_names=self.class_names).splitlines()
         else:
-            combined_true_labels, combined_predicted_labels = None, None
+            # combined_true_labels, combined_predicted_labels = None, None
             class_report = None
 
         metrics = {
@@ -251,7 +260,7 @@ class Trainer():
         ) = self._validation_loop()
 
         # broadcast val loss and update lr on all GPUs
-        val_loss = ddp_utils.broadcast_object(val_metrics["loss"], self.master_process)
+        val_loss = ddp_utils.broadcast_object(self.ddp_run_ind, val_metrics["loss"], self.master_process)
         self._update_lr(val_loss)
 
         if self.master_process:
@@ -283,9 +292,10 @@ class Trainer():
         # max_epochs = self.hp_dict["epochs"]
 
         for epoch in tqdm(range(1, max_epochs+1), total=max_epochs,  disable=(not(self.master_process)), colour='green'):
+            self._epochs_run += 1
             (train_metrics, val_metrics, class_report), exec_time = self._run_epoch(epoch)
             if self.master_process and not self.testing:
-                self.stop = self.stopper(val_metrics["accuracy"], epoch)
+                self._stop = self._stopper(val_metrics["accuracy"], epoch)
                 self._is_best = self._best(val_metrics["accuracy"], val_metrics["f1"], class_report, epoch, self.model)
                 if self._is_best:
                     self._save_snapshot(epoch, self.hp_dict, threshold=90.0, metric=val_metrics["accuracy"])
@@ -300,11 +310,9 @@ class Trainer():
                 )
                 print("\n" + epoch_summary + "\n")
 
-            # broadcast_list = [self.stop if self.master_process else None]
-            self.stop = ddp_utils.broadcast_object(self.stop, self.master_process)
-            # dist.broadcast_object_list(broadcast_list, 0)  # broadcast 'stop' to all ranks
-            # self.stop = broadcast_list[0]
-            if self.stop:
+            self._stop = ddp_utils.broadcast_object(self.ddp_run_ind, self._stop, self.master_process)
+
+            if self._stop:
                 break # must break all DDP ranks
 
         # finished training -> move to reporting      

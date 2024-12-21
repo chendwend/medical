@@ -1,6 +1,7 @@
 import argparse
 import os
 import subprocess
+from typing import Tuple
 
 import hydra
 from dotenv import load_dotenv
@@ -10,13 +11,13 @@ from torch.cuda import device_count, is_available
 import wandb
 
 
-def setup_wandb(random_sweep_count, sweep_project):
+def setup_wandb(random_sweep_count:int, sweep_project:str, test_mode:bool) -> Tuple[str, int]:
     import yaml
 
     load_dotenv()
     api_key = os.getenv("WANDB_API_KEY")
     if not api_key:
-        raise ValueError("WANDB_API_KEY is not set in the environment variables.")
+        raise EnvironmentError("WANDB_API_KEY is not set in the environment variables.")
     
     with open("conf/sweep_config.yaml") as stream:
         try:
@@ -27,7 +28,10 @@ def setup_wandb(random_sweep_count, sweep_project):
     if sweep_config["method"] == 'grid':
         sweep_count = calculate_combinations(sweep_config['parameters'])
     elif sweep_config["method"] == 'random':
-        sweep_count = random_sweep_count
+        sweep_count = random_sweep_count 
+
+    if test_mode:
+        os.environ["WANDB_MODE"] = "disabled"
 
     sweep_id = wandb.sweep(sweep_config, project=sweep_project)
 
@@ -55,19 +59,20 @@ def run_training(gpu_devices:str, gpu_device_count:int, task:str, model:str, wor
     if workers:
         command.append("-w")
 
-    result = subprocess.run(command, env=env, check=True)
-    if result.returncode == 0:
-        print("Sweep finished Successfully")
-    else:
-        print("------Sweep FAILED------")
+    try:
+        result = subprocess.run(command, env=env, check=True)
+        print("Sweep finished Successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"------Sweep FAILED------\n{e}")
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-m","--model" , help="model type",  choices=["resnet50", "resnet101", "resnet152", "resnetv2_50x1_bit"])
-    parser.add_argument("-t", "--task", help="type of task", choices=["pathology", "birads", "mass_shape", "breast_density"])
+    parser.add_argument("-r", "--task", help="type of task", choices=["pathology", "birads", "mass_shape", "breast_density"])
     parser.add_argument("-d", "--devices", nargs="+", type=str, help="list of selected devices", default="all")
     parser.add_argument("-w", "--workers", help="test num_workes", action="store_true")
     parser.add_argument("-b", "--wandb", help="Activate Wandb experimentation", action="store_true")
+    parser.add_argument("-t", "--test", help="test mode", action="store_true")
 
     args = parser.parse_args()
 
@@ -83,9 +88,9 @@ def main(cfg:DictConfig):
 
     assert is_available(), "Training on CPU is useless"
 
-
     if not cfg.workers:
-        sweep_id, sweep_count = setup_wandb(cfg.sweep_counts, sweep_project=cfg.task)
+        sweep_project = "test_mode" if cfg.testing else cfg.task
+        sweep_id, sweep_count = setup_wandb(cfg.sweep_counts, sweep_project, cfg.testing)
         print(f"Initiating with sweep counts = {sweep_count}.")
         wandb.agent(sweep_id, 
                     function=lambda: run_training(cfg.gpu_devices, 
@@ -93,14 +98,14 @@ def main(cfg:DictConfig):
                                                   cfg.task, 
                                                   cfg.model), 
                     count=sweep_count, 
-                    project=cfg.task)
+                    project=sweep_project)
     else:
         run_training(cfg.gpu_devices, 
                      cfg.gpu_device_count, 
                      cfg.task, 
                      cfg.model, 
                      cfg.workers,
-                     1)
+                     nnodes=1)
 
 
 if __name__ == "__main__":
@@ -113,7 +118,8 @@ if __name__ == "__main__":
         f"gpu_devices={args.devices}",
         f"gpu_device_count={args.num_devices}",
         f"task={args.task}",
-        f"workers={args.workers}"
+        f"workers={args.workers}",
+        f"testing={args.test}"
     ]
 
     with hydra.initialize(version_base="1.3", config_path="conf"):

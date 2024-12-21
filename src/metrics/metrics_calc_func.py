@@ -1,7 +1,3 @@
-# import matplotlib
-
-# matplotlib.use("TkAgg")
-import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import classification_report
 
@@ -31,6 +27,11 @@ def f1(recall, precision, epsilon=1e-7) -> np.array:
 
 
 def create_report(y_true, y_pred, class_names, path):
+    # import matplotlib
+
+    # matplotlib.use("TkAgg")
+    import matplotlib.pyplot as plt
+
     report_string = classification_report(
         y_true, y_pred, target_names=class_names, output_dict=False
     )

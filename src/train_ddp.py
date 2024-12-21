@@ -11,56 +11,62 @@ from utils import ddp_utils, general_utils
 
 
 def train(cfg):
-    try:
-        global_rank, local_rank, world_size, master_process, device = ddp_utils.ddp_setup()
-        general_utils.seed_everything(cfg.seed, global_rank)
-        if global_rank == 0:
-            wandb.init()
-            config = wandb.config
-            hp_dict = {k: v for k, v in dict(config).items()}
-            param_string = "_".join([f"{k}={v}" for k, v in hp_dict.items()])
-            wandb.run.name = cfg.task + "_" + cfg.model + "_" + param_string
-        else:
-            # if not master_process, then no wandb initialization, thus no access to wandb hyperparameters dict
-            hp_dict = None
-            
-        hp_dict = ddp_utils.broadcast_object(hp_dict, global_rank==0)
 
-        print(f"GPU {local_rank} - loading dataset") 
-        train_loader, val_loader, test_loader = get_dataloaders(cfg["folders"][cfg.task], 
-                                                                cfg.preprocessing.image_size, 
-                                                                cfg.preprocessing.norm, 
-                                                                hp_dict["batch_size"], 
-                                                                world_size, 
-                                                                local_rank,
-                                                                cfg.seed, 
-                                                                cfg.testing)
-        model = CustomResNet(num_classes=cfg["classes_per_task"][cfg.task], 
-                             model_name=cfg.model, 
-                             fc_layer=hp_dict["fc_layer"]).to(local_rank)
+    ddp_run_ind, global_rank, local_rank, world_size, master_process, device = ddp_utils.ddp_setup()
+    general_utils.seed_everything(cfg.seed, global_rank)
+             
+    if global_rank == 0:
+        wandb.init()
+        if not dict(wandb.config):
+            wandb.config = cfg.hp
+        hp_dict = {k: v for k, v in dict(wandb.config).items()}
+        param_string = "_".join([f"{k}={v}" for k, v in hp_dict.items()])
+        wandb.run.name = cfg.task + "_" + cfg.model + "_" + param_string
+    else:
+        # if not master_process, then no wandb initialization
+        hp_dict = None
+                
+    hp_dict = ddp_utils.broadcast_object(ddp_run_ind, hp_dict, global_rank==0, device)
+
+    print(f"GPU {local_rank} - loading dataset") 
+    train_loader, val_loader, test_loader = get_dataloaders(cfg["folders"][cfg.task], 
+                                                            cfg.preprocessing.image_size, 
+                                                            cfg.preprocessing.norm, 
+                                                            hp_dict["batch_size"], 
+                                                            world_size, 
+                                                            local_rank,
+                                                            cfg.num_workers,
+                                                            cfg.seed, 
+                                                            cfg.testing)
+    model = CustomResNet(num_classes=cfg["classes_per_task"][cfg.task], 
+                        model_name=cfg.model, 
+                        fc_layer=hp_dict["fc_layer"]).to(device)
+    if ddp_run_ind:
         model = DDP(model, device_ids=[local_rank])
 
-        loss = torch.nn.CrossEntropyLoss(label_smoothing=hp_dict["label_smoothing"]).to(device)
+    loss = torch.nn.CrossEntropyLoss(label_smoothing=hp_dict["label_smoothing"]).to(device)
 
-        trainer = Trainer(cfg.task, 
-                            model, 
-                            train_loader, 
-                            val_loader, 
-                            loss,
-                            cfg["class_names"][cfg.task],
-                            hp_dict,
-                            cfg["early_stopping_patience"],
-                            world_size=world_size,
-                            master_process=master_process,
-                            testing=cfg.testing,
-                            )
-        exec_time = trainer.train_model()
+    trainer = Trainer(cfg.task, 
+                        model, 
+                        train_loader, 
+                        val_loader, 
+                        loss,
+                        cfg["class_names"][cfg.task],
+                        hp_dict,
+                        cfg["early_stopping_patience"],
+                        world_size=world_size,
+                        master_process=master_process,
+                        device=device,
+                        testing=cfg.testing,
+                        ddp_run_ind = ddp_run_ind
+                        )
+    exec_time = trainer.train_model()
 
-
-    finally:
+    if ddp_run_ind:
         ddp_utils.ddp_cleanup()
         if exec_time:
             print(f"Execution time: {exec_time}")
+    
 
 
 def test_num_workers(cfg:DictConfig):
@@ -115,7 +121,6 @@ def parse_args():
 
 if __name__ == "__main__":
 
-
     args = parse_args()
 
     overrides = [
@@ -123,6 +128,7 @@ if __name__ == "__main__":
         f"task={args.task}",
         f"workers={args.workers}"
     ]
+
     with hydra.initialize(version_base="1.3", config_path="../conf"):
         cfg = hydra.compose(config_name="config", overrides=overrides)
         if args.workers:
