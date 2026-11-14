@@ -54,7 +54,7 @@ h11==0.14.0
 httpcore==1.0.6
 httpx==0.27.2
 huggingface-hub==0.23.5
-hydra-core==1.3.2
+hydra-core==1.3.4
 idna==3.4
 ipykernel @ file:///home/conda/feedstock_root/build_artifacts/ipykernel_1708996548741/work
 ipython @ file:///home/conda/feedstock_root/build_artifacts/ipython_1715263367085/work
