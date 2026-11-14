@@ -146,7 +146,7 @@ ptyprocess @ file:///home/conda/feedstock_root/build_artifacts/ptyprocess_160941
 pure-eval @ file:///home/conda/feedstock_root/build_artifacts/pure_eval_1642875951954/work
 pycparser==2.21
 pydantic==1.10.9
-pydicom==2.4.4
+pydicom==2.4.5
 pydicom-seg==0.4.1
 Pygments==2.15.1
 pypandoc==1.11
