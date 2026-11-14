@@ -145,7 +145,7 @@ psutil @ file:///opt/conda/conda-bld/psutil_1656431268089/work
 ptyprocess @ file:///home/conda/feedstock_root/build_artifacts/ptyprocess_1609419310487/work/dist/ptyprocess-0.7.0-py2.py3-none-any.whl
 pure-eval @ file:///home/conda/feedstock_root/build_artifacts/pure_eval_1642875951954/work
 pycparser==2.21
-pydantic==1.10.9
+pydantic==1.10.13
 pydicom==2.4.4
 pydicom-seg==0.4.1
 Pygments==2.15.1
